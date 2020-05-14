@@ -1,4 +1,5 @@
 from enum import Enum
+
 class Color(Enum):
     RED = 1
     GREEN = 2
@@ -49,7 +50,7 @@ def getSameIndexesColors():
     for i in range(len(cars)):
         if cars[i].getColor() == Color.RED:
             colRed.append(i)
-        else if cars[i].getColor() == Color.GREEN:
+        elif cars[i].getColor == Color.GREEN:
             colGreen.append(i)
         else:
             colBlue.append(i)
@@ -62,7 +63,7 @@ def getSameIndexesEngine():
     for i in range(len(cars)):
         if cars[i].getEngine() == Engine.DIESEL:
             enDie.append(i)
-        else if cars[i].getEngine() == Engine.PETROL:
+        elif cars[i].getEngine() == Engine.PETROL:
             enPe.append(i)
         else:
             enEl.append(i)
@@ -75,7 +76,7 @@ def getSameIndexesBody():
     for i in range(len(cars)):
         if cars[i].getBody() == Body.LIMO:
             boLi.append(i)
-        else if cars[i].getBody() == Body.ESTATE:
+        elif cars[i].getBody() == Body.ESTATE:
             boEs.append(i)
         else:
             boHa.append(i)
