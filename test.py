@@ -1,12 +1,17 @@
 
-import ast
-
-dictTest={0:1, 1:2, 2:3, 3:2, 4:0, 5:1, 6:2, 7:3, 8:4, 9:4 , 10:5, 11:6, 12:7, 13:8, 14:9, 15:0, 16:0, 17:1, 18:1, 19:2, 20:2, 21:1, 22:0, 23:9, 24:1, 25:1, 26:9}
+import itertools
 
 
-dictStr = str(dictTest)
+lista = ["1", "2", "3","4" , "5", "6", "7", "8", "9","9", "9", "9", "9", "9", "1", "2", "3", "4", "5", "6", "7", "8"]
 
 
-afer = ast.literal_eval(dictStr)
-print("Typ dic "+type(afer).__name__)
-print(afer)
+def unique_prem(ser):
+    return {"".join(p) for p in itertools.permutations(ser)}
+
+perm = unique_prem(lista)
+
+
+k = 0
+for i in range(2000000):
+    k = k+1
+print("end "+str(k))

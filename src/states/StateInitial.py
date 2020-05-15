@@ -1,9 +1,21 @@
 from spade.message import Message 
 from spade.behaviour import State
 from agents import FactoryAgent
-import ast
 #import metadata
 import itertools
+
+def string2Dict(string):
+    withoutMArg = string.replace("{", "")
+    withoutMArg = withoutMArg.replace("}", "")
+    poles = withoutMArg.split(",")
+    toReturn = dict()
+    for val in poles:
+        val = val.replace(" ", "")     
+        pair = val.split(":")
+        k = int(pair[0])
+        v = int(pair[1])
+        toReturn.update({k:v})
+    return toReturn
 
 """
     Klasa reprezentujaca stan poczatkowy 
@@ -55,12 +67,13 @@ class StateInitial(State):
         Funkcja bedaca proxy do obliczania najwiekszego mozliwego kosztu
     """
     def getWorst(self, resp):
-        pricePerPiece = agent.getPricePerPiece()
-        pricePerChange = agent.getPricePerChange()
-        indexes = agent.getSameIndexes()
+        pricePerPiece = self.agent.getPricePerPiece()
+        pricePerChange = self.agent.getPricePerChange()
+        indexes = self.agent.getSameIndexes()
         first = 0
         second = 0
         third = 0
+        print(indexes)
         for index1 in indexes[0]:
             first = first + resp[index1]
         for index2 in indexes[1]:
@@ -84,15 +97,17 @@ class StateInitial(State):
     """
     def createSubLists(self, resp, indexes):
         suma = 0
-        lista = []
-        for i in indexes:
-            suma = suma + resp[i]
-            for k in resp[i]:
-                lista.append(i)
-        allPerm = list(itertools.permutations(lista))
-        return self.removeDuplicats(allPerm)
+        allPermutations = []
+        indexesPerm = list(itertools.permutations(indexes))
+        for permutation in indexesPerm:
+            solution = []
+            for ind in permutation:
+                for howmany in range(resp[ind]):
+                    solution.append(ind)
+            if solution not in allPermutations:
+                allPermutations.append(solution)
+        return allPermutations
 
-        #We should have suma! different 
     """
         Konwersja elementow z listy
         Laczy liste list w jedna liste
@@ -115,10 +130,11 @@ class StateInitial(State):
         Uwaga na zbiory puste (jesli nie ma do wyprodukowania aut o danej wartosci cechy)
     """
     def createB0prim(self, items):
-        indexes = agent.getSameIndexes() 
+        indexes = self.agent.getSameIndexes() 
         sublistA = self.createSubLists(items, indexes[0])
         sublistB = self.createSubLists(items, indexes[1])
         sublistC = self.createSubLists(items, indexes[2])
+        print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC)))
         B0prim = []
         if len(sublistA) > 0 and len(sublistB) > 0 and len(sublistC) > 0:
             for l in sublistA:
@@ -154,6 +170,7 @@ class StateInitial(State):
         else:
             for el in sublistC:
                 B0prim.append(el)
+        print("all calculated")
         return B0prim
 
 
@@ -163,17 +180,13 @@ class StateInitial(State):
         msg = await self.receive(timeout=30) 
         print("I got msg! "+msg.body)
         if (msg is not None):
-            print("good msg")
-            print ("typ wiadomosci " + type(msg.body).__name__)
-            #res = json.loads(msg.body)
-            res = ast.literal_eval(msg.body)
-            print("Wanted: "+ res)
+            res = string2Dict(msg.body)       
             self.agent.setToProduce(res)
             worst = self.getWorst(res)
             if worst == 0 :
                 print("empty order")
             else:
-                print("the worst i can get "+worst+" my name "+self.agent.getName())
+                print("the worst i can get "+str(worst)+" my name "+self.agent.getName())
                 self.agent.setWorst(worst)
                 B0prim = self.createB0prim(res)
                 self.agent.setB0prim(B0prim)

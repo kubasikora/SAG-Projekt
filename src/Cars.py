@@ -50,11 +50,11 @@ def getSameIndexesColors():
     for i in range(len(cars)):
         if cars[i].getColor() == Color.RED:
             colRed.append(i)
-        elif cars[i].getColor == Color.GREEN:
+        elif cars[i].getColor() == Color.GREEN:
             colGreen.append(i)
         else:
             colBlue.append(i)
-    return [colRed, colBlue, colGreen]
+    return [colRed, colGreen, colBlue]
 
 def getSameIndexesEngine():
     enDie = []
