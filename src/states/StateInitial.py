@@ -1,8 +1,8 @@
 from spade.message import Message 
 from spade.behaviour import State
 from agents import FactoryAgent
-import json
-import metadata
+import ast
+#import metadata
 import itertools
 
 """
@@ -10,9 +10,9 @@ import itertools
     oczekuje ona na pojawienie sie wiadomosci od Managera
     nastepnie oblicznae jest B0prim oraz najgorsza mozliwa wartosc
 """
-class InitState(State):
+class StateInitial(State):
     def __init__(self, agent):
-        super.__init__(self)
+        #super(StateInitial).__init__(self)
         self.agent = agent
 
     """
@@ -160,18 +160,23 @@ class InitState(State):
     async def run(self):
         print("Starting state init: agent "+self.agent.getName())
         self.agent.clearTable()
-        msg = await self.receive() 
-            if (msg is not None):
-                res = json.loads(msgBody)
-                self.agent.setToProduce(res)
-                worst = self.getWorst(res)
-                if worst == 0 :
-                    print("empty order")
-                else:
-                    print("the worst i can get "+worst+" my name "+self.agent.getName())
-                    self.agent.setWorst(worst)
-                    B0prim = self.createB0prim(res)
-                    self.agent.setB0prim(B0prim)
-                    #self.set_next_state(STATE_COMPUTE_B0)                              proper next step!!
+        msg = await self.receive(timeout=30) 
+        print("I got msg! "+msg.body)
+        if (msg is not None):
+            print("good msg")
+            print ("typ wiadomosci " + type(msg.body).__name__)
+            #res = json.loads(msg.body)
+            res = ast.literal_eval(msg.body)
+            print("Wanted: "+ res)
+            self.agent.setToProduce(res)
+            worst = self.getWorst(res)
+            if worst == 0 :
+                print("empty order")
+            else:
+                print("the worst i can get "+worst+" my name "+self.agent.getName())
+                self.agent.setWorst(worst)
+                B0prim = self.createB0prim(res)
+                self.agent.setB0prim(B0prim)
+                #self.set_next_state(STATE_COMPUTE_B0)                              proper next step!!
                        
 

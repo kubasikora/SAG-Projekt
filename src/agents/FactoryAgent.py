@@ -1,24 +1,27 @@
 import time
 from spade.agent import Agent
-from states import metadata, StateInitial
+from states import *
 from spade.behaviour import FSMBehaviour
+from spade.template import Template
 
 class NegotiateFSMBehaviour(FSMBehaviour):
     async def on_end(self):
+        print("Finishing at state "+ self.current_state)
         await self.agent.stop()
 
 
 
 class FactoryAgent(Agent):
     def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes ):
-        super.__init__(jid, password)
-        self.name = name
+        super(FactoryAgent, self).__init__(jid, password)
+        self.nameMy = name
+        self.Myjid = jid
         self.pricePerChange = pricePerChange
         self.pricePerEl = pricePerEl
         self.sameIndexes = sameIndexes
 
     def getName(self):
-        return self.name
+        return self.nameMy
     def getPricePerPiece(self):
         return self.pricePerEl
     def getPricePerChange(self):
@@ -41,6 +44,10 @@ class FactoryAgent(Agent):
         self.mateBProposals = []
 
     async def setup(self):
-        fsm = NegotiateFSMBehaviour)
+        fsm = NegotiateFSMBehaviour()
+        template = Template()
+        template.sender = "manager@localhost"
+        template.to = self.Myjid
+        template.metadata = {"performative": "request", "language":"dictionary"}
         fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
-        self.add_behaviour(fsm)
+        self.add_behaviour(fsm, template)
