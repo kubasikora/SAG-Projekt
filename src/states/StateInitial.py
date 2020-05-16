@@ -1,7 +1,7 @@
 from spade.message import Message 
 from spade.behaviour import State
 from agents import FactoryAgent
-#import metadata
+from .metadata import *
 import itertools
 
 def string2Dict(string):
@@ -24,8 +24,8 @@ def string2Dict(string):
 """
 class StateInitial(State):
     def __init__(self, agent):
-        #super(StateInitial).__init__(self)
-        self.agent = agent
+        super().__init__()
+        self.fAgent = agent
 
     """
         Algorytm obliczajacy najgorszy mozliwy koszt jaki dany agent moze wygenerowac
@@ -67,9 +67,9 @@ class StateInitial(State):
         Funkcja bedaca proxy do obliczania najwiekszego mozliwego kosztu
     """
     def getWorst(self, resp):
-        pricePerPiece = self.agent.getPricePerPiece()
-        pricePerChange = self.agent.getPricePerChange()
-        indexes = self.agent.getSameIndexes()
+        pricePerPiece = self.fAgent.getPricePerPiece()
+        pricePerChange = self.fAgent.getPricePerChange()
+        indexes = self.fAgent.getSameIndexes()
         first = 0
         second = 0
         third = 0
@@ -130,11 +130,11 @@ class StateInitial(State):
         Uwaga na zbiory puste (jesli nie ma do wyprodukowania aut o danej wartosci cechy)
     """
     def createB0prim(self, items):
-        indexes = self.agent.getSameIndexes() 
+        indexes = self.fAgent.getSameIndexes() 
         sublistA = self.createSubLists(items, indexes[0])
         sublistB = self.createSubLists(items, indexes[1])
         sublistC = self.createSubLists(items, indexes[2])
-        print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC)))
+        #print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC)))
         B0prim = []
         if len(sublistA) > 0 and len(sublistB) > 0 and len(sublistC) > 0:
             for l in sublistA:
@@ -170,26 +170,29 @@ class StateInitial(State):
         else:
             for el in sublistC:
                 B0prim.append(el)
-        print("all calculated")
+        #print("all calculated")
         return B0prim
 
 
     async def run(self):
-        print("Starting state init: agent "+self.agent.getName())
-        self.agent.clearTable()
+        print("Starting state init: agent "+self.fAgent.getName())
+        self.fAgent.clearTable()
         msg = await self.receive(timeout=30) 
         print("I got msg! "+msg.body)
-        if (msg is not None):
+        if msg is not None:
             res = string2Dict(msg.body)       
-            self.agent.setToProduce(res)
+            self.fAgent.setToProduce(res)
             worst = self.getWorst(res)
             if worst == 0 :
                 print("empty order")
+                self.set_next_state(STATE_INIT)
             else:
-                print("the worst i can get "+str(worst)+" my name "+self.agent.getName())
-                self.agent.setWorst(worst)
+                print("the worst i can get "+str(worst)+" my name "+self.fAgent.getName())
+                self.fAgent.setWorst(worst)
                 B0prim = self.createB0prim(res)
-                self.agent.setB0prim(B0prim)
-                #self.set_next_state(STATE_COMPUTE_B0)                              proper next step!!
+                self.fAgent.setB0prim(B0prim)
+                self.set_next_state(STATE_COMPUTE_B0)
+        else:
+            self.set_next_state(STATE_INIT)
                        
 
