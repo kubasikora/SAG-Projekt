@@ -11,12 +11,12 @@ if __name__ == "__main__":
     painterAAgent.web.start(hostname="localhost", port="10000")
     future.result()
 
-    welderAAgent = FactoryAgent("welderA@localhost", "12345678","WelderA",5, 5, getSameIndexesColors(),["assemblyA@localhost", "painterA@localhost"])
+    welderAAgent = FactoryAgent("welderA@localhost", "12345678","WelderA",5, 5, getSameIndexesBody(),["assemblyA@localhost", "painterA@localhost"])
     future2 = welderAAgent.start()
     welderAAgent.web.start(hostname="localhost", port="10000")
     future2.result()
 
-    assemblyAAgent = FactoryAgent("assemblyA@localhost", "12345678","AssemblyA",5, 5, getSameIndexesColors(),["welderA@localhost", "painterA@localhost"])
+    assemblyAAgent = FactoryAgent("assemblyA@localhost", "12345678","AssemblyA",5, 5, getSameIndexesEngine(),["welderA@localhost", "painterA@localhost"])
     future3 = assemblyAAgent.start()
     assemblyAAgent.web.start(hostname="localhost", port="10000")
     future3.result()
