@@ -176,7 +176,7 @@ class StateInitial(State):
 
     async def run(self):
         print("Starting state init: agent "+self.fAgent.getName())
-        self.fAgent.clearTable()
+        self.fAgent.clearTables()
         msg = await self.receive(timeout=30) 
         print("I got msg! "+msg.body)
         if msg is not None:

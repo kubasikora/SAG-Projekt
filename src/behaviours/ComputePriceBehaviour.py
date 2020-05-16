@@ -20,13 +20,13 @@ class ComputePriceBehaviour(CyclicBehaviour):
     async def run(self):
         msg = await self.receive(timeout = 10)
         if msg is not None:
-            print("Got a message!")
+            #print("Got a message!")
             if(msg.body is not ""):
                 sigma = self.parseMessage(msg.body)
                 cost = self.fAgent.getMyCost(msg.body, sigma)
                 msgResp = Message(to=str(msg.sender))     # Instantiate the message
-                #msgResp.set_metadata("performative", "inform")
-                #msgResp.set_metadata("language","int" )
+                msgResp.set_metadata("performative", "inform")
+                msgResp.set_metadata("language","int" )
                 msgResp.set_metadata("conversation-id", "1")
                 msgResp.body = str(cost)
                 await self.send(msgResp)

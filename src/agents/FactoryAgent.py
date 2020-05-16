@@ -23,6 +23,9 @@ class FactoryAgent(Agent):
         self.myCalculatedCosts = dict()
         self.allCalculatedCosts = dict()
         self.coworkers = coworkers
+        self.activeCoworkers = coworkers
+        self.B0 = []
+        self.currentSigma = []
 
     def getName(self):
         return self.nameMy
@@ -34,7 +37,6 @@ class FactoryAgent(Agent):
         return self.sameIndexes
     def setToProduce(self, itemsToCreate):
         self.itemsToCreate = itemsToCreate
-
     def getType(self, index):
         if index in self.sameIndexes[0] : 
             return "a"
@@ -42,7 +44,6 @@ class FactoryAgent(Agent):
             return "b"
         else:
             return "c"
-
     def computeCost(self, sequence):
         cost = len(sequence) * self.pricePerEl
         lastType = "n"
@@ -53,7 +54,6 @@ class FactoryAgent(Agent):
                 lastType = c
         cost = cost - self.pricePerChange
         return cost
-
     def getMyCost(self, string, sequence):
         string = string.replace(" ", "")     
         if string in self.myCalculatedCosts:
@@ -62,7 +62,6 @@ class FactoryAgent(Agent):
             cost = self.computeCost(sequence)
             self.myCalculatedCosts[string] = cost
             return cost
-
     def setWorst(self, worst):
         self.worst = worst
     def setB0prim(self, B0prim):
@@ -71,12 +70,34 @@ class FactoryAgent(Agent):
         return self.B0prim
     def getWorst(self):
         return self.worst
-    def clearTable(self):
+    def clearTables(self):
         self.myProposals = []
         self.mateAProposals = []
         self.mateBProposals = []
     def getCoworkers(self):
         return self.coworkers
+    def getCostAll(self, string):
+        string = string.replace(" ", "")  
+        if string in self.allCalculatedCosts:
+            return self.allCalculatedCosts[string]
+        else:
+            return -1
+    def setCostAll(self, string, sequence):
+        string = string.replace(" ", "")  
+        self.allCalculatedCosts[string] = sequence
+    def getMyProposals(self):
+        return self.myProposals
+    def setB0(self, B0):
+        self.B0 = B0
+    def getB0(self):
+        return B0
+    def setCurrentSigma(self, sigma):
+        self.currentSigma = sigma
+    def getCurrentSigma(self):
+        return self.currentSigma
+    def getActiveCoworkers(self):
+        return self.activeCoworkers
+    
     async def setup(self):
         fsm = NegotiateFSMBehaviour()
         templateStates = Template()
@@ -90,9 +111,11 @@ class FactoryAgent(Agent):
 
         fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
         fsm.add_state(name=STATE_COMPUTE_B0, state=StateComputeB0(self))
+        fsm.add_state(name=STATE_PROPOSE, state=StatePropose(self))
         fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
-        #fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
+        fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
+        #fsm.add_transition(source=STATE_PROPOSE, dest=STATE_COMPUTE_PROPOSALS)
 
         cpb = ComputePriceBehaviour(self)
 
