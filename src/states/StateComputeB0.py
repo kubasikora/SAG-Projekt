@@ -33,11 +33,17 @@ class StateComputeB0(State):
                     msg.set_metadata("performative", "request")
                     msg.body = str(seq)
                     await self.send(msg)
-                    resp = await self.receive(timeout=15)
-                    if resp is None:
-                        print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                    if resp is not None:
-                        costSeq = costSeq + int(resp.body)
+                    gotResponse = False
+                    while gotResponse == False:
+                        resp = await self.receive(timeout=5)
+                        if resp is None:
+                            print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                        else:
+                            if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
+                                costSeq = costSeq + int(resp.body)
+                                gotResponse = True
+                            else:
+                                self.fAgent.saveMessage(resp)
                 self.fAgent.setCostAll(str(seq), seq)
             else:
                 costSeq = costAll

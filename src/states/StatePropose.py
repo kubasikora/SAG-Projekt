@@ -23,10 +23,10 @@ class StatePropose(State):
             msg = Message(to=coworker)
             msg.set_metadata("performative", "propose")
             msg.set_metadata("language","list" )
-            #msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            #msg.body = str(sigma)
+            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
+            msg.body = str(sigma)
             await self.send(msg)
-        #self.set_next_state(STATE_COMPUTE_PROPOSALS)
+        self.set_next_state(STATE_COMPUTE_PROPOSALS)
         #bezposrednia zmiana stanu do oczekiwania na przyjecie odpowiedzi
 
         

@@ -8,7 +8,7 @@ from behaviours import ComputePriceBehaviour
 class NegotiateFSMBehaviour(FSMBehaviour):
     async def on_end(self):
         print("Finishing at state "+ self.current_state)
-        await self.agent.stop()
+        #await self.agent.stop()
 
 
 
@@ -26,6 +26,7 @@ class FactoryAgent(Agent):
         self.activeCoworkers = coworkers
         self.B0 = []
         self.currentSigma = []
+        self.mailboxForLater = []
 
     def getName(self):
         return self.nameMy
@@ -97,7 +98,10 @@ class FactoryAgent(Agent):
         return self.currentSigma
     def getActiveCoworkers(self):
         return self.activeCoworkers
-    
+    def getSavedMailBox(self):
+        return self.mailboxForLater
+    def saveMessage(self, msg):
+        self.mailboxForLater.append(msg)
     async def setup(self):
         fsm = NegotiateFSMBehaviour()
         templateStates = Template()
@@ -112,10 +116,11 @@ class FactoryAgent(Agent):
         fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
         fsm.add_state(name=STATE_COMPUTE_B0, state=StateComputeB0(self))
         fsm.add_state(name=STATE_PROPOSE, state=StatePropose(self))
+        fsm.add_state(name=STATE_COMPUTE_PROPOSALS, state=StateComputeProposals(self))
         fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
         fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
-        #fsm.add_transition(source=STATE_PROPOSE, dest=STATE_COMPUTE_PROPOSALS)
+        fsm.add_transition(source=STATE_PROPOSE, dest=STATE_COMPUTE_PROPOSALS)
 
         cpb = ComputePriceBehaviour(self)
 
