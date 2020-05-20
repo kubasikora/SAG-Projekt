@@ -13,6 +13,7 @@ class StateComputeProposals(State):
 
     async def run(self):
         print("Starting computing proposals, my name "+ self.fAgent.nameMy)
+        
 
 
 
