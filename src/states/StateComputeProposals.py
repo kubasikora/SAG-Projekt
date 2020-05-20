@@ -3,6 +3,8 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
 
+
+#sprawdzanie czy dokonano dealu 
 class StateComputeProposals(State):
     
     def __init__(self, agent):
@@ -11,4 +13,6 @@ class StateComputeProposals(State):
 
     async def run(self):
         print("Starting computing proposals, my name "+ self.fAgent.nameMy)
-        #musimy odebrac wszystkie wiadomosci od naszych ziomkow ale zobaczyc czy nie wyslali nam tego wczesniej <- tutaj nastepuje synchronizacja
+
+
+

@@ -31,9 +31,9 @@ class DeputeBehaviour(OneShotBehaviour):
 class ManagerAgent(Agent):
     async def setup(self):
         print("StartManager")
-        self.painterA = DeputeBehaviour("painterA@localhost")
-        self.welderA = DeputeBehaviour("welderA@localhost")
-        self.assemblyA = DeputeBehaviour("assemblyA@localhost")
+        self.painterA = DeputeBehaviour("paintera@localhost")
+        self.welderA = DeputeBehaviour("weldera@localhost")
+        self.assemblyA = DeputeBehaviour("assemblya@localhost")
         self.add_behaviour(self.painterA)
         self.add_behaviour(self.welderA)
         self.add_behaviour(self.assemblyA)

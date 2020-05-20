@@ -18,7 +18,7 @@ class ComputePriceBehaviour(CyclicBehaviour):
         return toReturn  
 
     async def run(self):
-        msg = await self.receive(timeout = 10)
+        msg = await self.receive(timeout = 5)
         if msg is not None:
             #print("Got a message!")
             if(msg.body is not ""):
