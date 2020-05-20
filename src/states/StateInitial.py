@@ -67,9 +67,9 @@ class StateInitial(State):
         Funkcja bedaca proxy do obliczania najwiekszego mozliwego kosztu
     """
     def getWorst(self, resp):
-        pricePerPiece = self.fAgent.getPricePerPiece()
-        pricePerChange = self.fAgent.getPricePerChange()
-        indexes = self.fAgent.getSameIndexes()
+        pricePerPiece = self.fAgent.pricePerEl
+        pricePerChange = self.fAgent.pricePerChange
+        indexes = self.fAgent.sameIndexes
         first = 0
         second = 0
         third = 0
@@ -130,7 +130,7 @@ class StateInitial(State):
         Uwaga na zbiory puste (jesli nie ma do wyprodukowania aut o danej wartosci cechy)
     """
     def createB0prim(self, items):
-        indexes = self.fAgent.getSameIndexes() 
+        indexes = self.fAgent.sameIndexes
         sublistA = self.createSubLists(items, indexes[0])
         sublistB = self.createSubLists(items, indexes[1])
         sublistC = self.createSubLists(items, indexes[2])
@@ -175,22 +175,22 @@ class StateInitial(State):
 
 
     async def run(self):
-        print("Starting state init: agent "+self.fAgent.getName())
+        print("Starting state init: agent "+self.fAgent.nameMy)
         self.fAgent.clearTables()
         msg = await self.receive(timeout=30) 
         print("I got msg! "+msg.body)
         if msg is not None:
             res = string2Dict(msg.body)       
-            self.fAgent.setToProduce(res)
+            self.fAgent.itemsToCreate = res
             worst = self.getWorst(res)
             if worst == 0 :
                 print("empty order")
                 self.set_next_state(STATE_INIT)
             else:
-                print("the worst i can get "+str(worst)+" my name "+self.fAgent.getName())
-                self.fAgent.setWorst(worst)
+                print("the worst i can get "+str(worst)+" my name "+self.fAgent.nameMy)
+                self.fAgent.worst = worst
                 B0prim = self.createB0prim(res)
-                self.fAgent.setB0prim(B0prim)
+                self.fAgent.B0prim = B0prim
                 self.set_next_state(STATE_COMPUTE_B0)
         else:
             self.set_next_state(STATE_INIT)

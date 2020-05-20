@@ -16,11 +16,11 @@ class StateComputeB0(State):
 
     #should add checking if we already now the price and should add saving the price of mates in agent!! 
     async def run(self):
-        print("Starting computing b0, my name "+ self.agent.getName())
-        B0prim = self.fAgent.getB0prim()
+        print("Starting computing b0, my name "+ self.fAgent.nameMy)
+        B0prim = self.fAgent.B0prim
         stringSeq = str(B0prim[0])
         myCost = self.fAgent.getMyCost(stringSeq, B0prim[0])
-        coworkersJID = self.fAgent.getCoworkers()
+        coworkersJID = self.fAgent.coworkers
         minCost = MAX_COST
         B0 = []
         for seq in B0prim:
@@ -58,9 +58,9 @@ class StateComputeB0(State):
             print("I am done")
             #ustaw stan na nieaktywny
         else:
-            print("my seq "+self.fAgent.getName())
+            print("my seq "+self.fAgent.nameMy)
             print(sequence)
             B0.remove(sequence)
-            self.fAgent.setB0(B0) 
-            self.fAgent.setCurrentSigma(sequence)
+            self.fAgent.B0 = B0 
+            self.fAgent.currentSigma = sequence
             self.set_next_state(STATE_PROPOSE)

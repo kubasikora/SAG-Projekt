@@ -10,5 +10,5 @@ class StateComputeProposals(State):
         self.fAgent = agent
 
     async def run(self):
-        print("Starting computing proposals, my name "+ self.agent.getName())
+        print("Starting computing proposals, my name "+ self.fAgent.nameMy)
         #musimy odebrac wszystkie wiadomosci od naszych ziomkow ale zobaczyc czy nie wyslali nam tego wczesniej <- tutaj nastepuje synchronizacja

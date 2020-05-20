@@ -28,16 +28,6 @@ class FactoryAgent(Agent):
         self.currentSigma = []
         self.mailboxForLater = []
 
-    def getName(self):
-        return self.nameMy
-    def getPricePerPiece(self):
-        return self.pricePerEl
-    def getPricePerChange(self):
-        return self.pricePerChange
-    def getSameIndexes(self):
-        return self.sameIndexes
-    def setToProduce(self, itemsToCreate):
-        self.itemsToCreate = itemsToCreate
     def getType(self, index):
         if index in self.sameIndexes[0] : 
             return "a"
@@ -63,20 +53,10 @@ class FactoryAgent(Agent):
             cost = self.computeCost(sequence)
             self.myCalculatedCosts[string] = cost
             return cost
-    def setWorst(self, worst):
-        self.worst = worst
-    def setB0prim(self, B0prim):
-        self.B0prim = B0prim
-    def getB0prim(self):
-        return self.B0prim
-    def getWorst(self):
-        return self.worst
     def clearTables(self):
         self.myProposals = []
         self.mateAProposals = []
-        self.mateBProposals = []
-    def getCoworkers(self):
-        return self.coworkers
+        self.mateBProposals = []   
     def getCostAll(self, string):
         string = string.replace(" ", "")  
         if string in self.allCalculatedCosts:
@@ -86,22 +66,9 @@ class FactoryAgent(Agent):
     def setCostAll(self, string, sequence):
         string = string.replace(" ", "")  
         self.allCalculatedCosts[string] = sequence
-    def getMyProposals(self):
-        return self.myProposals
-    def setB0(self, B0):
-        self.B0 = B0
-    def getB0(self):
-        return B0
-    def setCurrentSigma(self, sigma):
-        self.currentSigma = sigma
-    def getCurrentSigma(self):
-        return self.currentSigma
-    def getActiveCoworkers(self):
-        return self.activeCoworkers
-    def getSavedMailBox(self):
-        return self.mailboxForLater
     def saveMessage(self, msg):
         self.mailboxForLater.append(msg)
+    
     async def setup(self):
         fsm = NegotiateFSMBehaviour()
         templateStates = Template()

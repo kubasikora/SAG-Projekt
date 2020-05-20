@@ -13,12 +13,12 @@ class StatePropose(State):
 
     #need to wait for other agen to skip this state
     async def run(self):
-        print("Starting negotiation, my name "+ self.agent.getName())
-        sigma = self.fAgent.getCurrentSigma()
-        myProposition = self.fAgent.getMyProposals()
+        print("Starting negotiation, my name "+ self.fAgent.nameMy)
+        sigma = self.fAgent.currentSigma
+        myProposition = self.fAgent.myProposals
         if sigma not in myProposition:
             myProposition.append(sigma)
-        activeCoworkers = self.fAgent.getActiveCoworkers()
+        activeCoworkers = self.fAgent.activeCoworkers
         for coworker in activeCoworkers:
             msg = Message(to=coworker)
             msg.set_metadata("performative", "propose")
