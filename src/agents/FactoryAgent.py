@@ -87,12 +87,16 @@ class FactoryAgent(Agent):
         fsm.add_state(name=STATE_WAIT_FOR_PROPSALS, state=StateWaitForProposals(self))
         fsm.add_state(name=STATE_COMPUTE_PROPOSALS, state=StateComputeProposals(self))
         fsm.add_state(name=STATE_COMPUTE_RISK, state=StateComputeRisk(self))
+        fsm.add_state(name=STATE_COMPUTE_CONCESSION, state=StateComputeConcession(self))
+        fsm.add_state(name=STATE_WAIT_FOR_NEXT_ROUND, state=StateWaitForNextRound(self))
         fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
         fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
         fsm.add_transition(source=STATE_PROPOSE, dest=STATE_WAIT_FOR_PROPSALS)
         fsm.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_COMPUTE_PROPOSALS) # compute_proposals might be final if agreement found
         fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_COMPUTE_RISK)
+        fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
+        fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
 
         cpb = ComputePriceBehaviour(self)
 

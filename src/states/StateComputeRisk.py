@@ -2,6 +2,7 @@ from spade.message import Message
 from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
+from copy import deepcopy
 
 
 class StateComputeRisk(State):
@@ -15,13 +16,39 @@ class StateComputeRisk(State):
         myUtility = 0.0        
         myUtility = float(self.fAgent.worst - self.fAgent.getMyCost(str(self.fAgent.currentSigma),self.fAgent.currentSigma))
         if myUtility == 0.0:
-            risk = 1.0
+            myRisk = 1.0
         else:
-            risk = 0.0;
+            myRisk = 0.0;
             for co in self.fAgent.activeCoworkers:
                 proposition = self.fAgent.matesProposals[co][len(self.fAgent.matesProposals[co])-1] 
                 utility = float(self.fAgent.worst - self.fAgent.getMyCost(str(proposition),proposition))
                 temp = (myUtility - utility)/myUtility
-                if temp > risk:
-                    risk = temp
-        print("my risk! "+str(risk))
+                if temp > myRisk:
+                    myRisk = temp
+        print("my risk! "+str(myRisk))
+        for co in self.fAgent.activeCoworkers:
+            msg = Message(to=co)
+            msg.set_metadata("performative", "inform")
+            msg.set_metadata("language","float" )
+            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
+            msg.body = str(myRisk)
+            await self.send(msg)
+        # waiting for all responses from agents!!!
+        waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)     
+        matesRisk = []
+        while (len(waitingCoworkers)> 0 ):
+            msg = await self.receive(timeout = 5)
+            if msg is not None:
+                sender = str(msg.sender)
+                if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "float":
+                    waitingCoworkers.remove(sender)
+                    matesRisk.append(float(msg.body))
+                else:
+                    self.fAgent.saveMessage(msg)
+        #if my risk is the smalles -> I should concede!
+        if myRisk <= min(matesRisk):
+            print("I should concede "+self.fAgent.nameMy)
+            self.set_next_state(STATE_COMPUTE_CONCESSION)
+        else:
+            print("I should not concede "+self.fAgent.nameMy)
+            self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
