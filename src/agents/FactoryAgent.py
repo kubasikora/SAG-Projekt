@@ -55,6 +55,7 @@ class FactoryAgent(Agent):
             return cost
     def clearTables(self):
         self.myProposals = []
+        self.myWorstProposal = []
         self.matesProposals = dict() # it will be something dictionary where string will be a key for list of lists 
         for col in self.coworkers:
             self.matesProposals[col] = []
@@ -84,11 +85,13 @@ class FactoryAgent(Agent):
         fsm.add_state(name=STATE_PROPOSE, state=StatePropose(self))
         fsm.add_state(name=STATE_WAIT_FOR_PROPSALS, state=StateWaitForProposals(self))
         fsm.add_state(name=STATE_COMPUTE_PROPOSALS, state=StateComputeProposals(self))
+        fsm.add_state(name=STATE_COMPUTE_RISK, state=StateComputeRisk(self))
         fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
         fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
         fsm.add_transition(source=STATE_PROPOSE, dest=STATE_WAIT_FOR_PROPSALS)
-        fsm.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_COMPUTE_PROPOSALS)
+        fsm.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_COMPUTE_PROPOSALS) # compute_proposals might be final if agreement found
+        fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_COMPUTE_RISK)
 
         cpb = ComputePriceBehaviour(self)
 

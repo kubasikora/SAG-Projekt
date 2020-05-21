@@ -63,4 +63,9 @@ class StateComputeB0(State):
             B0.remove(sequence)
             self.fAgent.B0 = B0 
             self.fAgent.currentSigma = sequence
+            #if self.self.fAgent.myWorstProposal
+            if len(self.fAgent.myWorstProposal) == 0:
+                self.fAgent.myWorstProposal = sequence
+            elif self.fAgent.getMyCost(str(self.fAgent.myWorstProposal), self.fAgent.myWorstProposal) < myCost:
+                self.fAgent.myWorstProposal = sequence
             self.set_next_state(STATE_PROPOSE)
