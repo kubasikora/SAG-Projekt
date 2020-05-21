@@ -45,7 +45,7 @@ class StateComputeProposals(State):
         myDisagree = dict()
         sigma = self.fAgent.currentSigma
         worstProposed = self.fAgent.myWorstProposal
-        limit = self.fAgent.getMyCost(str(worstProposed), worstProposed)
+        limit = self.fAgent.getMyCost(str(worstProposed), worstProposed) # in the article they used utility but as utility is def as worst - cost, we can use just cost
         print(self.fAgent.nameMy+" my limit "+str(limit))
         #compute your decision (if you agree or disagree)
         self.decide(myAgree,myDisagree,limit)

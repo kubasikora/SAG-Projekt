@@ -27,6 +27,7 @@ class FactoryAgent(Agent):
         self.B0 = []
         self.currentSigma = []
         self.mailboxForLater = []
+        self.worst = 0
 
     def getType(self, index):
         if index in self.sameIndexes[0] : 
