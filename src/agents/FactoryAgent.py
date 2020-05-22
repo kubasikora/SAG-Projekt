@@ -3,7 +3,7 @@ from spade.agent import Agent
 from states import *
 from spade.behaviour import FSMBehaviour
 from spade.template import Template
-from behaviours import ComputePriceBehaviour,  ComputeBetterOrEqualBehaviour, ComputeRiskBehaviour
+from behaviours import ComputeAgentsCostBehaviour,  ComputeBetterOrEqualBehaviour, ComputeRiskBehaviour
 
 class NegotiateFSMBehaviour(FSMBehaviour):
     async def on_end(self):
@@ -105,11 +105,11 @@ class FactoryAgent(Agent):
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
 
-        cpb = ComputePriceBehaviour(self)
+        cacb = ComputeAgentsCostBehaviour(self)
         csb = ComputeBetterOrEqualBehaviour(self)
         crb = ComputeRiskBehaviour(self)
 
         self.add_behaviour(fsm, templateStates)
-        self.add_behaviour(cpb, templateCost)
+        self.add_behaviour(cacb, templateCost)
         self.add_behaviour(csb, templateStates)
         self.add_behaviour(crb, templateRisks)

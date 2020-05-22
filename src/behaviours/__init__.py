@@ -1,3 +1,3 @@
-from .ComputePriceBehaviour import ComputePriceBehaviour
+from .ComputeAgentsCostBehaviour import ComputeAgentsCostBehaviour
 from .ComputeBetterOrEqualBehaviour import ComputeBetterOrEqualBehaviour
 from .ComputeRiskBehaviour import ComputeRiskBehaviour

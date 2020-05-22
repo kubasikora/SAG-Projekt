@@ -2,7 +2,7 @@ from spade.behaviour import CyclicBehaviour
 from agents import FactoryAgent
 from spade.message import Message
 
-class ComputePriceBehaviour(CyclicBehaviour):
+class ComputeAgentsCostBehaviour(CyclicBehaviour):
     def __init__(self, agent):
         super().__init__()
         self.fAgent = agent
