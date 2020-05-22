@@ -1,17 +1,34 @@
 
-import itertools
+def parseSets(string): # the format of the string [[[],[], ..], 'break', [[],[],...]]
+    string = string.replace(" ", "")
+    lists = string.split("break")
+    toReturn = []
+    for l in lists:
+        l = l.replace("'", "")
+        sigmas = l.split("]")
+        converted = []
+        for sigma in sigmas:
+            sigma = sigma.replace("[", "")            
+            if( len(sigma)> 0 and sigma[0] == ","):
+                sigma = sigma[1:]
+            if(len(sigma)) > 0:
+                nums = sigma.split(",")
+                convertedSigma = []
+                for n in nums:
+                    convertedSigma.append(int(n))
+                converted.append(convertedSigma)
+        toReturn.append(converted)
+
+    return toReturn
 
 
-lista = ["1", "2", "3","4" , "5", "6", "7", "8", "9","9", "9", "9", "9", "9", "1", "2", "3", "4", "5", "6", "7", "8"]
+
+listaA = [[[1, 2, 3, 4, 5],[3, 4, 5]],'break', [[1, 2, 3]]]
+
+zbiory = parseSets(str(listaA))
+print(zbiory)
 
 
-def unique_prem(ser):
-    return {"".join(p) for p in itertools.permutations(ser)}
+listaC = [[[1, 2, 3, 4, 5],[3, 4, 5]],'break', []]
 
-perm = unique_prem(lista)
-
-
-k = 0
-for i in range(2000000):
-    k = k+1
-print("end "+str(k))
+print(parseSets(str(listaC)))

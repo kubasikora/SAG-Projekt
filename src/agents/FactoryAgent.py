@@ -3,7 +3,7 @@ from spade.agent import Agent
 from states import *
 from spade.behaviour import FSMBehaviour
 from spade.template import Template
-from behaviours import ComputePriceBehaviour
+from behaviours import ComputePriceBehaviour,  ComputeBetterOrEqualBehaviour
 
 class NegotiateFSMBehaviour(FSMBehaviour):
     async def on_end(self):
@@ -28,6 +28,7 @@ class FactoryAgent(Agent):
         self.currentSigma = []
         self.mailboxForLater = []
         self.worst = 0
+        self.itemsToCreate = dict()
 
     def getType(self, index):
         if index in self.sameIndexes[0] : 
@@ -80,6 +81,9 @@ class FactoryAgent(Agent):
         templateCost = Template()
         templateCost.to = self.Myjid
         templateCost.metadata = {"conversation-id": "2"}
+        templateSets = Template()
+        templateSets.to = self.Myjid
+        templateSets.metadata = {"conversation-id": "3"}
 
         fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
         fsm.add_state(name=STATE_COMPUTE_B0, state=StateComputeB0(self))
@@ -99,6 +103,8 @@ class FactoryAgent(Agent):
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
 
         cpb = ComputePriceBehaviour(self)
+        csb = ComputeBetterOrEqualBehaviour(self)
 
         self.add_behaviour(fsm, templateStates)
         self.add_behaviour(cpb, templateCost)
+        self.add_behaviour(csb, templateStates)
