@@ -151,23 +151,28 @@ class StateComputeConcession(State):
         bestSigmas = []
         for s in sigmasWithGoodRisk:
             tempCost = self.fAgent.getMyCost(str(s), s)
-            for co in self.fAgent.coworkers:
-                msg=Message(to=cp)
-                msg.set_metadata("conversation-id", "2")
-                msg.set_metadata("performative", "request")
-                msg.body = str(s)
-                await self.send(msg)
-                gotResponse = False
-                while gotResponse == False:
-                    resp = await self.receive(timeout=5)
-                    if resp is None:
-                        print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                    else:
-                        if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
-                            tempCost = tempCost + int(resp.body)
-                            gotResponse = True
+            costAllTemp = self.fAgent.getCostAll(str(s))
+            if costAllTemp != -1 :
+                tempCost = costAllTemp
+            else:
+                for co in self.fAgent.coworkers:
+                    msg=Message(to=cp)
+                    msg.set_metadata("conversation-id", "2")
+                    msg.set_metadata("performative", "request")
+                    msg.body = str(s)
+                    await self.send(msg)
+                    gotResponse = False
+                    while gotResponse == False:
+                        resp = await self.receive(timeout=5)
+                        if resp is None:
+                            print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
                         else:
-                            self.fAgent.saveMessage(resp)
+                            if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
+                                tempCost = tempCost + int(resp.body)
+                                gotResponse = True
+                            else:
+                                self.fAgent.saveMessage(resp)
+                self.fAgent.setCostAll(str(s), tempCost)
             if tempCost == lowestCostFound and tempCost < myOldCost:
                 bestSigmas.append(s)
             elif tempCost < lowestCostFound:
@@ -185,6 +190,7 @@ class StateComputeConcession(State):
                 self.fAgent.myWorstProposal = chosen
 
             self.fAgent.currentSigma = chosen
+            self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
 
         elif len(self.fAgent.B0 > 0):
             print("nope, need to check B0 set")
@@ -193,7 +199,9 @@ class StateComputeConcession(State):
             if self.fAgent.getMyCost(str(self.fAgent.myWorstProposal), self.fAgent.myWorstProposal) < self.fAgent.getMyCost(str(chosen), chosen):
                 self.fAgent.myWorstProposal = chosen           
             self.fAgent.currentSigma = chosen
+            self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
         else: 
             print("should change state to recomputing bpi if it is possible")
+            # new state to add!! 
         
 

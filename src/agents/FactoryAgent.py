@@ -67,9 +67,9 @@ class FactoryAgent(Agent):
             return self.allCalculatedCosts[string]
         else:
             return -1
-    def setCostAll(self, string, sequence):
+    def setCostAll(self, string, cost):
         string = string.replace(" ", "")  
-        self.allCalculatedCosts[string] = sequence
+        self.allCalculatedCosts[string] = cost
     def saveMessage(self, msg):
         self.mailboxForLater.append(msg)
     
@@ -104,6 +104,8 @@ class FactoryAgent(Agent):
         fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_COMPUTE_RISK)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
+        fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_WAIT_FOR_NEXT_ROUND)
+        fsm.add_transition(source=STATE_WAIT_FOR_NEXT_ROUND, dest=STATE_PROPOSE)
 
         cacb = ComputeAgentsCostBehaviour(self)
         csb = ComputeBetterOrEqualBehaviour(self)

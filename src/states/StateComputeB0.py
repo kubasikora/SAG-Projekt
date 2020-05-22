@@ -44,7 +44,7 @@ class StateComputeB0(State):
                                 gotResponse = True
                             else:
                                 self.fAgent.saveMessage(resp)
-                self.fAgent.setCostAll(str(seq), seq)
+                self.fAgent.setCostAll(str(seq), costSeq)
             else:
                 costSeq = costAll
             if costSeq < minCost:
