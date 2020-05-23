@@ -123,10 +123,10 @@ class StateComputeProposals(State):
         if agreementFound == True:
             print("The end "+self.fAgent.nameMy)
             print("the cost "+ str(self.fAgent.getCostAll(str(self.fAgent.currentSigma))))
-            print(self.fAgent.allCalculatedCosts.values())
+            print(min(self.fAgent.allCalculatedCosts.values()))
             for co in self.fAgent.coworkers:
                 msg = Message(to=co)
-                msg.set_metadata("performative", inform)
+                msg.set_metadata("performative", "inform")
                 msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
                 msg.body = "We have got it!"
                 await self.send(msg) 

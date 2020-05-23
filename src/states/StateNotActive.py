@@ -14,6 +14,7 @@ class StateNotActive(State):
     async def run(self):
 
         print("Disactivating, my name "+ self.fAgent.nameMy)
+        print(min(self.fAgent.allCalculatedCosts.values()))
         for co in self.fAgent.activeCoworkers:
             msg = Message(to=co)
             msg.set_metadata("performative", "inform")
