@@ -17,7 +17,7 @@ class DeputeBehaviour(OneShotBehaviour):
         msg.set_metadata("conversation-id", "1")
         msg.set_metadata("performative", "request")  # Set the "inform" FIPA performative
         msg.set_metadata("language","dictionary" )
-        dictTest={0:1, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:3, 8:4, 9:4 , 10:0, 11:6, 12:0, 13:0, 14:9, 15:0, 16:0, 17:1, 18:0, 19:2, 20:0, 21:0, 22:0, 23:9, 24:0, 25:0, 26:9}
+        dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:0, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:5, 18:0, 19:0, 20:1, 21:0, 22:3, 23:0, 24:0, 25:0, 26:0}
         msg.body = str(dictTest)
         await self.send(msg)
         print("Message sent!")

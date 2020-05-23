@@ -31,6 +31,7 @@ class StateComputeB0(State):
                     msg=Message(to=cjid)
                     msg.set_metadata("conversation-id", "2")
                     msg.set_metadata("performative", "request")
+                    msg.set_metadata("save", "True")
                     msg.body = str(seq)
                     await self.send(msg)
                     gotResponse = False

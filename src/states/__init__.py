@@ -7,3 +7,4 @@ from .StateComputeProposals import StateComputeProposals
 from .StateComputeRisk import StateComputeRisk
 from .StateComputeConcession import StateComputeConcession
 from .StateWaitForNextRound import StateWaitForNextRound
+from .StateNotActive import StateNotActive

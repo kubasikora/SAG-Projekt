@@ -33,12 +33,12 @@ class StateInitial(State):
         kolejno sprawdza sie ile maksymalnie mozna dokonac zmian (ktore generuja dodatkow koszty)
     """
 
-    def computeWorst(self, itemA, itemB, itemC, priceChange, priceEach):
-        sumEle = itemA + itemB + itemC
+    def computeWorst(self, itemA, itemB, itemC,sumEle, priceChange, priceEach):       
         cost = sumEle * priceEach
+        types = itemA + itemB + itemC
         lastT = "n"
         nextT = "n"
-        while(sumEle > 0):
+        while(types > 0):
             mapEle = { "a": itemA, "b": itemB, "c": itemC}
             mapsSorted = sorted(mapEle.items(), key = lambda x: x[1])
             if mapsSorted[0][0] != lastT or mapsSorted[1][1] == 0:
@@ -48,7 +48,7 @@ class StateInitial(State):
             else:
                 nextT = mapsSorted[2][0]
 
-            sumEle = sumEle -1
+            types = types -1
 
             if nextT != lastT:
                 cost = cost + priceChange
@@ -73,14 +73,21 @@ class StateInitial(State):
         first = 0
         second = 0
         third = 0
-        print(indexes)
+        elements = 0
         for index1 in indexes[0]:
-            first = first + resp[index1]
+            #first = first + resp[index1] despite adding all of the elements we do not even consider splitting the same products
+            elements = elements + resp[index1]
+            if resp[index1] != 0:
+                first = first + 1 
         for index2 in indexes[1]:
-            second = second + resp[index2]
+            elements = elements + resp[index2]
+            if resp[index2] != 0:
+                second = second + 1             
         for index3 in indexes[2]:
-            third = third + resp[index3]
-        return self.computeWorst(first, second, third, pricePerChange, pricePerPiece)
+            elements = elements + resp[index3]
+            if resp[index3] != 0:
+                third = third + 1               
+        return self.computeWorst(first, second, third,elements, pricePerChange, pricePerPiece)
     """
         Funkcja usuwajaca duplikaty z listy
     """
@@ -98,13 +105,17 @@ class StateInitial(State):
     def createSubLists(self, resp, indexes):
         suma = 0
         allPermutations = []
-        indexesPerm = list(itertools.permutations(indexes))
+        indexesToPerm = []
+        for i in indexes:
+            if resp[i] != 0:
+                indexesToPerm.append(i)
+        indexesPerm = list(itertools.permutations(indexesToPerm))
         for permutation in indexesPerm:
             solution = []
             for ind in permutation:
                 for howmany in range(resp[ind]):
-                    solution.append(ind)
-            if solution not in allPermutations:
+                    solution.append(ind) 
+            if len(solution) > 0:           
                 allPermutations.append(solution)
         return allPermutations
 
@@ -134,7 +145,7 @@ class StateInitial(State):
         sublistA = self.createSubLists(items, indexes[0])
         sublistB = self.createSubLists(items, indexes[1])
         sublistC = self.createSubLists(items, indexes[2])
-        #print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC)))
+        #print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC))+" my name" +self.fAgent.nameMy)
         B0prim = []
         if len(sublistA) > 0 and len(sublistB) > 0 and len(sublistC) > 0:
             for l in sublistA:
@@ -178,7 +189,6 @@ class StateInitial(State):
         print("Starting state init: agent "+self.fAgent.nameMy)
         self.fAgent.clearTables()
         msg = await self.receive(timeout=30) 
-        print("I got msg! "+msg.body)
         if msg is not None:
             res = string2Dict(msg.body)       
             self.fAgent.itemsToCreate = res
@@ -190,6 +200,7 @@ class StateInitial(State):
                 print("the worst i can get "+str(worst)+" my name "+self.fAgent.nameMy)
                 self.fAgent.worst = worst
                 B0prim = self.createB0prim(res)
+                print("my Bprim size "+str(len(B0prim))+" my name "+self.fAgent.nameMy)
                 self.fAgent.B0prim = B0prim
                 self.set_next_state(STATE_COMPUTE_B0)
         else:

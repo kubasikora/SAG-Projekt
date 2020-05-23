@@ -38,15 +38,14 @@ class StateWaitForNextRound(State):
                     self.fAgent.activeCoworkers.remove(str(msg.sender))
         for msg in msgToRemove:
             self.fAgent.mailboxForLater.remove(msg)
-        
         while len(waitingCoworkers) > 0:
             resp = await self.receive(timeout=10)
             if resp is not None:
-                sender = str(msg.sender)
-                if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "boolean" :
+                sender = str(resp.sender)
+                if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "boolean" :
                     waitingCoworkers.remove(sender)
-                    if msg.body == "False":
-                        self.fAgent.activeCoworkers.remove(str(msg.sender))
+                    if resp.body == "False":
+                        self.fAgent.activeCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
         

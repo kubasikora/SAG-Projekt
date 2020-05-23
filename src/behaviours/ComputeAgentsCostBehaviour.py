@@ -24,6 +24,8 @@ class ComputeAgentsCostBehaviour(CyclicBehaviour):
             if(msg.body is not ""):
                 sigma = self.parseMessage(msg.body)
                 cost = self.fAgent.getMyCost(msg.body, sigma)
+                if msg.metadata["save"] == "True":
+                    self.fAgent.saveMatesBest(str(msg.sender), sigma)
                 msgResp = Message(to=str(msg.sender))     # Instantiate the message
                 msgResp.set_metadata("performative", "inform")
                 msgResp.set_metadata("language","int" )

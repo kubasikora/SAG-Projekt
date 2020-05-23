@@ -3,7 +3,7 @@ from agents import FactoryAgent
 from spade.message import Message
 
 
-def parseMessage(string): # the format of the string [[[],[], ..], 'break', [[],[],...]]
+def parseMessage(string): # the format of the string [], 'break', []
     string = string.replace(" ", "")
     lists = string.split("break")
     toReturn = []
@@ -13,6 +13,8 @@ def parseMessage(string): # the format of the string [[[],[], ..], 'break', [[],
         l = l.replace("[", "")
         if(l[0] == ","):
             l = l[1:]
+        if(l[len(l)-1] ==","):
+            l = l[:-1]
         nums = l.split(",")
         sigma = []
         for n in nums:
@@ -39,6 +41,7 @@ class ComputeRiskBehaviour(CyclicBehaviour):
         if msg is not None:
             #print("Got a message!")
             if(msg.body is not ""):
+                #print(msg.body)
                 sigmas = parseMessage(msg.body) #sigmas[0] - other sigmas[1] - my
                 risk = self.computeRisk(sigmas[1], sigmas[0])
                 msgResp = Message(to=str(msg.sender))     # Instantiate the message

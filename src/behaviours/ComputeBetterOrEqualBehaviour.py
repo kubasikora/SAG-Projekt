@@ -19,20 +19,24 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
             toReturn.append(int(num))
         return toReturn  
 
-    def computeChangesLimit(self, sigma, cost):
-        lenght = len(sigma)
-        changes = round((cost - lenght * self.fAgent.pricePerEl)/self.fAgent.pricePerChange)
-        return changes
 
 
 
-    def createSetBetter(self, changesLimit):                                                                # to do 
-        #we should create subset that we make less changes than changesLimit 
-        toCreate = self.fAgent.itemsToCreate #the dictionary how many of which items should be created
-
-    def createSetEqual(self, changes):                                                                      # to do 
-        #we should create subset that we make exactly the same changes 
-        toCreate = self.fAgent.itemsToCreate #the dictionary how many of which items should be created
+    def createSets(self, cost):
+        better = []
+        equal = []
+        for sigma in self.fAgent.B0prim:
+            if (self.fAgent.getMyCost(str(sigma), sigma) < cost):
+                better.append(sigma)
+            elif (self.fAgent.getMyCost(str(sigma), sigma) == cost):
+                equal.append(sigma)         
+        for co in self.fAgent.coworkers:
+            for sigma in self.fAgent.matesOptimal[co]:
+                if (self.fAgent.getMyCost(str(sigma), sigma) < cost):
+                    better.append(sigma)
+                elif (self.fAgent.getMyCost(str(sigma), sigma)== cost):
+                    equal.append(sigma)   
+        return [better, equal]                      
 
 
     async def run(self):
@@ -42,11 +46,14 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
             if(msg.body is not ""):
                 sigma = self.parseMessage(msg.body)
                 cost = self.fAgent.getMyCost(msg.body, sigma)
-                changes = self.computeChangesLimit(sigma, cost)
                 response = []
-                response.append(self.createSetBetter(changes))
+                sets = self.createSets(cost)
+                response.append(sets[0])
                 response.append("break")
-                response.append(self.createSetEqual)
+                response.append(sets[1])
+                #response.append(self.createSetBetter(changes))
+                #response.append("break")
+                #response.append(self.createSetEqual)
                 msgResp = Message(to=str(msg.sender))     # Instantiate the message
                 msgResp.set_metadata("performative", "inform")
                 msgResp.set_metadata("language","list" )

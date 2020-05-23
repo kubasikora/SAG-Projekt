@@ -3,7 +3,7 @@ from spade.agent import Agent
 from states import *
 from spade.behaviour import FSMBehaviour
 from spade.template import Template
-from behaviours import ComputeAgentsCostBehaviour,  ComputeBetterOrEqualBehaviour, ComputeRiskBehaviour
+from behaviours import ComputeAgentsCostBehaviour, ComputeRiskBehaviour, ComputeBetterOrEqualBehaviour
 
 class NegotiateFSMBehaviour(FSMBehaviour):
     async def on_end(self):
@@ -29,6 +29,11 @@ class FactoryAgent(Agent):
         self.mailboxForLater = []
         self.worst = 0
         self.itemsToCreate = dict()
+        self.B0prim = []
+
+    def saveMatesBest(self, coworker, sigma):
+        if sigma not in self.matesOptimal[coworker]:
+            self.matesOptimal[coworker].append(sigma)
 
     def getType(self, index):
         if index in self.sameIndexes[0] : 
@@ -61,6 +66,10 @@ class FactoryAgent(Agent):
         self.matesProposals = dict() # it will be something dictionary where string will be a key for list of lists 
         for col in self.coworkers:
             self.matesProposals[col] = []
+        self.matesOptimal = dict() # it will be something dictionary where string will be a key for list of lists 
+        for col in self.coworkers:
+            self.matesOptimal[col] = []   
+    
     def getCostAll(self, string):
         string = string.replace(" ", "")  
         if string in self.allCalculatedCosts:
@@ -96,6 +105,7 @@ class FactoryAgent(Agent):
         fsm.add_state(name=STATE_COMPUTE_RISK, state=StateComputeRisk(self))
         fsm.add_state(name=STATE_COMPUTE_CONCESSION, state=StateComputeConcession(self))
         fsm.add_state(name=STATE_WAIT_FOR_NEXT_ROUND, state=StateWaitForNextRound(self))
+        fsm.add_state(name=STATE_NOT_ACTIVE, state=StateNotActive(self))
         fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
         fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
@@ -105,6 +115,7 @@ class FactoryAgent(Agent):
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
         fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_WAIT_FOR_NEXT_ROUND)
+        fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_NOT_ACTIVE)
         fsm.add_transition(source=STATE_WAIT_FOR_NEXT_ROUND, dest=STATE_PROPOSE)
 
         cacb = ComputeAgentsCostBehaviour(self)
@@ -113,5 +124,5 @@ class FactoryAgent(Agent):
 
         self.add_behaviour(fsm, templateStates)
         self.add_behaviour(cacb, templateCost)
-        self.add_behaviour(csb, templateStates)
         self.add_behaviour(crb, templateRisks)
+        self.add_behaviour(csb, templateSets)

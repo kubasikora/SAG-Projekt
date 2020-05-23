@@ -78,7 +78,6 @@ class StateComputeConcession(State):
                     waitingCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
-        print("we have propositions!")
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
         #en element is better at least for one agent
@@ -88,14 +87,13 @@ class StateComputeConcession(State):
             for sigma in matesPropositions[i][0]: #sigmas which are better 
                 toAdd = True
                 for j in range(len(matesPropositions)):
-                    if sigma not in matesPropositions[j][0] and sigma not in matesPropositions[j][1]:
+                    if  i == j or (i != j and sigma not in matesPropositions[j][0] and sigma not in matesPropositions[j][1]):
                         toAdd = False
                         break
                 if toAdd == True:
                     sigmas.append(sigma)
 
         sigmas = removeDuplicats(sigmas)
-
         #2. We should not propose anything that we proposed previously
         for prev in self.fAgent.myProposals:
             if prev in sigmas:
@@ -159,6 +157,7 @@ class StateComputeConcession(State):
                     msg=Message(to=cp)
                     msg.set_metadata("conversation-id", "2")
                     msg.set_metadata("performative", "request")
+                    msg.set_metadata("save", "False")
                     msg.body = str(s)
                     await self.send(msg)
                     gotResponse = False
@@ -192,7 +191,7 @@ class StateComputeConcession(State):
             self.fAgent.currentSigma = chosen
             self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
 
-        elif len(self.fAgent.B0 > 0):
+        elif len(self.fAgent.B0 ) > 0:
             print("nope, need to check B0 set")
             chosen = random.choice(self.fAgent.B0)
             self.fAgent.B0.remove(chosen)
@@ -201,7 +200,7 @@ class StateComputeConcession(State):
             self.fAgent.currentSigma = chosen
             self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
         else: 
-            print("should change state to recomputing bpi if it is possible")
+            self.set_next_state(STATE_NOT_ACTIVE)
             # new state to add!! 
         
 
