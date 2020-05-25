@@ -13,14 +13,15 @@ class StateNotActive(State):
 
     async def run(self):
 
-        self.fAgent.logger.log_warning(f"Aight, imma head out - disactivating with last cost {min(self.fAgent.allCalculatedCosts.values())}")
-        for co in self.fAgent.activeCoworkers:
-            msg = Message(to=co)
-            msg.set_metadata("performative", "inform")
-            msg.set_metadata("language","boolean" )
-            msg.set_metadata("conversation-id", "1")
-            msg.body = "False"
-            await self.send(msg)
+        if self.fAgent.optimal_result is None:
+            self.fAgent.logger.log_warning(f"Aight, imma head out - disactivating with last cost {min(self.fAgent.allCalculatedCosts.values())}")
+            for co in self.fAgent.activeCoworkers:
+                msg = Message(to=co)
+                msg.set_metadata("performative", "inform")
+                msg.set_metadata("language","boolean" )
+                msg.set_metadata("conversation-id", "1")
+                msg.body = "False"
+                await self.send(msg)
 
         end = False
 

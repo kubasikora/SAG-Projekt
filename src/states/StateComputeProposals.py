@@ -3,6 +3,7 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
+import json
 
 
 #sprawdzanie czy dokonano dealu 
@@ -125,12 +126,24 @@ class StateComputeProposals(State):
             self.fAgent.logger.log_success(f"The cost {self.fAgent.getCostAll(str(self.fAgent.currentSigma))}")
             self.fAgent.logger.log_success(f"Winning sequence {self.fAgent.currentSigma}")
             # print(min(self.fAgent.allCalculatedCosts.values()))
+            self.fAgent.optimal_result = self.fAgent.currentSigma
             for co in self.fAgent.coworkers:
                 msg = Message(to=co)
                 msg.set_metadata("performative", "inform")
                 msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
                 msg.body = "We have got it!"
                 await self.send(msg) 
+
+            result_message = Message(to=self.fAgent.manager)
+            result_message.set_metadata("performative", "inform")
+            result_message.set_metadata("conversation-id", "results")
+            result_dict = {
+                "sequence": self.fAgent.currentSigma,
+                "cost": self.fAgent.getCostAll(str(self.fAgent.currentSigma))
+            }
+            result_message.body = json.dumps(result_dict)
+            await self.send(result_message)
+
             self.set_next_state(STATE_NOT_ACTIVE)
 
         else:

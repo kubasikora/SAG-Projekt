@@ -16,7 +16,7 @@ class NegotiateFSMBehaviour(FSMBehaviour):
         #await self.agent.stop()
 
 class FactoryAgent(Agent):
-    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes , coworkers):
+    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager):
         super(FactoryAgent, self).__init__(jid, password)
         self.nameMy = name
         self.logger = Logger(name)
@@ -34,6 +34,8 @@ class FactoryAgent(Agent):
         self.worst = 0
         self.itemsToCreate = dict()
         self.B0prim = []
+        self.manager = manager
+        self.optimal_result = None
 
     def saveMatesBest(self, coworker, sigma):
         if sigma not in self.matesOptimal[coworker]:

@@ -59,7 +59,7 @@ class StateComputeB0(State):
             self.fAgent.logger.log_warning("I am done")
             #ustaw stan na nieaktywny
         else:
-            self.fAgent.logger.log_success(f"my seq {sequence}")
+            self.fAgent.logger.log_success(f"My seq {sequence}")
             B0.remove(sequence)
             self.fAgent.B0 = B0 
             self.fAgent.currentSigma = sequence
