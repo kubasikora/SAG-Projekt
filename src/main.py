@@ -1,11 +1,13 @@
 from agents import FactoryAgent , ManagerAgent
 from Cars import *
+from Logger import Logger
 import time
 from spade.agent import Agent
 
 
 if __name__ == "__main__":
-    print("Start")
+    logger = Logger("main")
+    logger.log_info("Start")
     painterAAgent = FactoryAgent("paintera@localhost", "12345678","PainterA",5, 5, getSameIndexesColors(),["assemblya@localhost", "weldera@localhost"])
     future = painterAAgent.start()
     painterAAgent.web.start(hostname="localhost", port="10000")
@@ -35,4 +37,4 @@ if __name__ == "__main__":
             managerAgent.stop()
             break
 
-    print("Agents finished")
+    logger.log_info("Agents finished")

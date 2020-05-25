@@ -4,18 +4,22 @@ from states import *
 from spade.behaviour import FSMBehaviour
 from spade.template import Template
 from behaviours import ComputeAgentsCostBehaviour, ComputeRiskBehaviour, ComputeBetterOrEqualBehaviour
+from Logger import Logger
 
 class NegotiateFSMBehaviour(FSMBehaviour):
+    def __init__(self, agent):
+        FSMBehaviour.__init__(self)
+        self.fAgent = agent
+
     async def on_end(self):
-        print("Finishing at state "+ self.current_state)
+        self.fAgent.logger.log_success(f"Finishing at state {self.current_state}")
         #await self.agent.stop()
-
-
 
 class FactoryAgent(Agent):
     def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes , coworkers):
         super(FactoryAgent, self).__init__(jid, password)
         self.nameMy = name
+        self.logger = Logger(name)
         self.Myjid = jid
         self.pricePerChange = pricePerChange
         self.pricePerEl = pricePerEl
@@ -83,7 +87,7 @@ class FactoryAgent(Agent):
         self.mailboxForLater.append(msg)
     
     async def setup(self):
-        fsm = NegotiateFSMBehaviour()
+        fsm = NegotiateFSMBehaviour(self)
         templateStates = Template()
         templateStates.to = self.Myjid
         templateStates.metadata = {"conversation-id": "1"}
@@ -112,6 +116,7 @@ class FactoryAgent(Agent):
         fsm.add_transition(source=STATE_PROPOSE, dest=STATE_WAIT_FOR_PROPSALS)
         fsm.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_COMPUTE_PROPOSALS) # compute_proposals might be final if agreement found
         fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_COMPUTE_RISK)
+        fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_NOT_ACTIVE)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
         fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
         fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_WAIT_FOR_NEXT_ROUND)

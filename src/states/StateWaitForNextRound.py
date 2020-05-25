@@ -12,7 +12,7 @@ class StateWaitForNextRound(State):
         self.fAgent = agent
 
     async def run(self):
-        print("Waiting for coworkers, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info("Waiting for coworkers")
         # in this state we need to check if all coworkers are active and ready to start the next round
         #right now everyone has computet new sigma so all we have to di is to check what kind of message we got from our active mates
 

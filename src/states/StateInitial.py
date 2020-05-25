@@ -186,7 +186,7 @@ class StateInitial(State):
 
 
     async def run(self):
-        print("Starting state init: agent "+self.fAgent.nameMy)
+        self.fAgent.logger.log_info(f"Starting state init: agent {self.fAgent.nameMy}")
         self.fAgent.clearTables()
         msg = await self.receive(timeout=30) 
         if msg is not None:
@@ -194,13 +194,13 @@ class StateInitial(State):
             self.fAgent.itemsToCreate = res
             worst = self.getWorst(res)
             if worst == 0 :
-                print("empty order")
+                self.fAgent.logger.log_warning("empty order")
                 self.set_next_state(STATE_INIT)
             else:
-                print("the worst i can get "+str(worst)+" my name "+self.fAgent.nameMy)
+                self.fAgent.logger.log_info(f"the worst i can get {str(worst)}")
                 self.fAgent.worst = worst
                 B0prim = self.createB0prim(res)
-                print("my Bprim size "+str(len(B0prim))+" my name "+self.fAgent.nameMy)
+                self.fAgent.logger.log_info(f"my Bprim size is {str(len(B0prim))}")
                 self.fAgent.B0prim = B0prim
                 self.set_next_state(STATE_COMPUTE_B0)
         else:

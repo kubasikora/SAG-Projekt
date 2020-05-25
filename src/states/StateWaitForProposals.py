@@ -21,9 +21,8 @@ class StateWaitForProposals(State):
         self.fAgent = agent
 
     async def run(self):
-        print("Waiting for proposals, my name "+ self.fAgent.nameMy)
         waitingActiveCoworkers = deepcopy(self.fAgent.activeCoworkers)
-        print(waitingActiveCoworkers)
+        self.fAgent.logger.log_info(f"Waiting for proposals from {waitingActiveCoworkers}")
         toRemove = []
         proposals = dict()
         for msg in self.fAgent.mailboxForLater:

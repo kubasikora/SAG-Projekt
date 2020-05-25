@@ -17,7 +17,7 @@ class StateComputeProposals(State):
             proposition = self.fAgent.matesProposals[co][len(self.fAgent.matesProposals[co])-1]            
             if limit >= self.fAgent.getMyCost(str(proposition), proposition):
                 myAgree[co] = proposition
-                print("I agree")
+                self.fAgent.logger.log_success("I agree")
             else:
                 myDisagree[co] = proposition
 
@@ -40,13 +40,13 @@ class StateComputeProposals(State):
        
 
     async def run(self):
-        print("Starting computing proposals, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info("Starting computing proposals")
         myAgree = dict()
         myDisagree = dict()
         sigma = self.fAgent.currentSigma
         worstProposed = self.fAgent.myWorstProposal
         limit = self.fAgent.getMyCost(str(worstProposed), worstProposed) # in the article they used utility but as utility is def as worst - cost, we can use just cost
-        print(self.fAgent.nameMy+" my limit "+str(limit))
+        self.fAgent.logger.log_info(f"my limit is {limit}")
         #compute your decision (if you agree or disagree)
         self.decide(myAgree,myDisagree,limit)
 
@@ -82,17 +82,17 @@ class StateComputeProposals(State):
                 else:
                     self.fAgent.saveMessage(msg)
     
-        print(self.fAgent.nameMy+" we have ok "+ str(ok)+" and nok "+str(nok))
+        self.fAgent.logger.log_info(f"I've got {ok} oks and {nok} not oks")
         agreementFound = False
         if nok == 0:
-            print("finally !!")
+            self.fAgent.logger.log_success("Agreement found!!")
             body = str(sigma)
             perf = "confirm"
             agreementFound = True
         else: 
             perf = "disconfirm"
             body = ""
-            print("need to work more")
+            self.fAgent.logger.log_warning("Need to work more")
 
         # notify other if there is or there is not an agreement
         for co in self.fAgent.activeCoworkers:
@@ -121,15 +121,17 @@ class StateComputeProposals(State):
                     self.fAgent.saveMessage(msg)
 
         if agreementFound == True:
-            print("The end "+self.fAgent.nameMy)
-            print("the cost "+ str(self.fAgent.getCostAll(str(self.fAgent.currentSigma))))
-            print(min(self.fAgent.allCalculatedCosts.values()))
+            self.fAgent.logger.log_success("The end")
+            self.fAgent.logger.log_success(f"The cost {self.fAgent.getCostAll(str(self.fAgent.currentSigma))}")
+            self.fAgent.logger.log_success(f"Winning sequence {self.fAgent.currentSigma}")
+            # print(min(self.fAgent.allCalculatedCosts.values()))
             for co in self.fAgent.coworkers:
                 msg = Message(to=co)
                 msg.set_metadata("performative", "inform")
                 msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
                 msg.body = "We have got it!"
                 await self.send(msg) 
+            self.set_next_state(STATE_NOT_ACTIVE)
 
         else:
             self.set_next_state(STATE_COMPUTE_RISK)

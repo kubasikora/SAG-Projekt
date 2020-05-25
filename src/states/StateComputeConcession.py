@@ -56,7 +56,7 @@ class StateComputeConcession(State):
         return risk
 
     async def run(self):
-        print("Compute concession, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info("Computing concession")
         #1. we should propose something what is at least as good for our mates as the one whe proposed before
         # we should propopse something that for one agent is better
         for co in self.fAgent.activeCoworkers:
@@ -144,7 +144,7 @@ class StateComputeConcession(State):
         #5. from this set we should chose something what has the smallest cost 
         myOldCost = self.fAgent.getCostAll(str(self.fAgent.currentSigma))
         if myOldCost == -1:
-            print("error ") #this situation should not occure
+            self.fAgent.logger.log_error("Error, my old cost is equal to -1") #this situation should not occure
         lowestCostFound = myOldCost # jesli znajdziemy cos co jest nizsze to to wybieramy
         bestSigmas = []
         for s in sigmasWithGoodRisk:
@@ -164,7 +164,7 @@ class StateComputeConcession(State):
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)
                         if resp is None:
-                            print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                            self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
                                 tempCost = tempCost + int(resp.body)
@@ -181,7 +181,7 @@ class StateComputeConcession(State):
         
         #Finally we have got set of true concession !!! we should chose one of them 
         if len(bestSigmas) > 0:
-            print("we have true concession!!")
+            self.fAgent.logger.log_success("We have true concession!!")
             chosen = random.choice(bestSigmas)
             if chosen in self.fAgent.B0:
                 self.fAgent.B0.remove(chosen)
@@ -192,7 +192,7 @@ class StateComputeConcession(State):
             self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)
 
         elif len(self.fAgent.B0 ) > 0:
-            print("nope, need to check B0 set")
+            self.fAgent.logger.log_warning("No concession found, need to check B0 set")
             chosen = random.choice(self.fAgent.B0)
             self.fAgent.B0.remove(chosen)
             if self.fAgent.getMyCost(str(self.fAgent.myWorstProposal), self.fAgent.myWorstProposal) < self.fAgent.getMyCost(str(chosen), chosen):

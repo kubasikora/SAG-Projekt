@@ -12,7 +12,7 @@ class StateComputeRisk(State):
         self.fAgent = agent
 
     async def run(self):
-        print("Starting computing risk, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info("Starting computing risk")
         myUtility = 0.0        
         myUtility = float(self.fAgent.worst - self.fAgent.getMyCost(str(self.fAgent.currentSigma),self.fAgent.currentSigma))
         if myUtility == 0.0:
@@ -25,7 +25,8 @@ class StateComputeRisk(State):
                 temp = (myUtility - utility)/myUtility
                 if temp > myRisk:
                     myRisk = temp
-        print("my risk! "+str(myRisk))
+
+        self.fAgent.logger.log_info(f"My risk equals {myRisk}")
         for co in self.fAgent.activeCoworkers:
             msg = Message(to=co)
             msg.set_metadata("performative", "inform")
@@ -33,6 +34,7 @@ class StateComputeRisk(State):
             msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
             msg.body = str(myRisk)
             await self.send(msg)
+
         # waiting for all responses from agents!!!
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)     
         matesRisk = []
@@ -45,10 +47,11 @@ class StateComputeRisk(State):
                     matesRisk.append(float(msg.body))
                 else:
                     self.fAgent.saveMessage(msg)
+
         #if my risk is the smalles -> I should concede!
         if myRisk <= min(matesRisk):
-            print("I should concede "+self.fAgent.nameMy)
+            self.fAgent.logger.log_info("I should concede")
             self.set_next_state(STATE_COMPUTE_CONCESSION)
         else:
-            print("I should not concede "+self.fAgent.nameMy)
+            self.fAgent.logger.log_info("I should not concede")
             self.set_next_state(STATE_WAIT_FOR_NEXT_ROUND)

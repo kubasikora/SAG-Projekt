@@ -16,7 +16,7 @@ class StateComputeB0(State):
 
     #should add checking if we already now the price and should add saving the price of mates in agent!! 
     async def run(self):
-        print("Starting computing b0, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info(f"Starting computing b0")
         B0prim = self.fAgent.B0prim
         stringSeq = str(B0prim[0])
         myCost = self.fAgent.getMyCost(stringSeq, B0prim[0])
@@ -38,7 +38,7 @@ class StateComputeB0(State):
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)
                         if resp is None:
-                            print("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                            self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
                                 costSeq = costSeq + int(resp.body)
@@ -56,11 +56,10 @@ class StateComputeB0(State):
 
         sequence = random.choice(B0)
         if len(sequence) == 0:
-            print("I am done")
+            self.fAgent.logger.log_warning("I am done")
             #ustaw stan na nieaktywny
         else:
-            print("my seq "+self.fAgent.nameMy)
-            print(sequence)
+            self.fAgent.logger.log_success(f"my seq {sequence}")
             B0.remove(sequence)
             self.fAgent.B0 = B0 
             self.fAgent.currentSigma = sequence

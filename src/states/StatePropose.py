@@ -13,7 +13,7 @@ class StatePropose(State):
 
     #need to wait for other agen to skip this state
     async def run(self):
-        print("Starting negotiation, my name "+ self.fAgent.nameMy)
+        self.fAgent.logger.log_info(f"Starting negotiation")
         sigma = self.fAgent.currentSigma
         myProposition = self.fAgent.myProposals
         if sigma not in myProposition:
