@@ -30,6 +30,36 @@ class DeputeBehaviour(OneShotBehaviour):
         # await self.agent.stop()    
         self.kill()
 
+
+class MonitorAgentActivityBehaviour(CyclicBehaviour):
+    def __init__(self, agent, workers):
+        super().__init__()
+        self.agent = agent
+        self.workers = dict((worker, False) for worker in workers)
+
+    async def run(self):
+        message = await self.receive(timeout=1)
+        if message is not None:
+            result = json.loads(message.body)
+            self.agent.logger.log_info(f"Agent {message.sender} reported inactivity")
+            self.workers[message.sender] = True
+            
+            # do wydzielenia do osobnej funkcji
+            logic_accumulator = True
+            for key in self.workers:
+                logic_accumulator &= self.workers[key]
+
+            if logic_accumulator:
+                # all agents reported inactivity
+                fwd = Message(to=message.to)
+                fwd.set_metadata("performative", "inform")
+                fwd.set_metadata("conversation-id", "results")
+                fwd.body = message.body
+                await self.send(fwd) # forward message to receiver behaviour
+            
+    async def on_end(self):
+        await self.agent.stop()
+
 class ReceiveResultBehaviour(CyclicBehaviour):
     def __init__(self, agent):
         super().__init__()
@@ -41,7 +71,7 @@ class ReceiveResultBehaviour(CyclicBehaviour):
             result = json.loads(message.body)
             self.agent.logger.log_success(f"Got optimal sequence {result['sequence']} with total cost of {result['cost']}")
             self.kill()
-            
+
     async def on_end(self):
         await self.agent.stop()
 
@@ -64,4 +94,10 @@ class ManagerAgent(Agent):
         receiver_template.set_metadata("conversation-id", "results")
         self.add_behaviour(self.waitForOptimalSequence, receiver_template)
         
+        self.agentMonitor = MonitorAgentActivityBehaviour(self, ["paintera@localhost", "weldera@localhost", "assemblya@localhost"])
+        monitor_template = Template()
+        monitor_template.set_metadata("performative", "inform")
+        monitor_template.set_metadata("conversation-id", "not-active")
+        self.add_behaviour(self.agentMonitor, monitor_template)
+
         self.logger.log_info("Manager has started")
