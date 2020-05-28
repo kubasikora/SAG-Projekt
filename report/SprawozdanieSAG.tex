@@ -1,0 +1,71 @@
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+
+\usepackage{SAGreport}
+% Use the postscript times font!
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{polski}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{luainputenc}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{caption}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{subfig}
+
+\urlstyle{same}
+	
+\title{Systemy agentowe\\ Planowanie pracy w fabryce}
+
+\author{
+Maria Konieczka, Alicja Poturała, Jakub Sikora
+\affiliations
+numery albumów: 283410, 283415, 283418 \\
+\emails
+maria.konieczka.stud@pw.edu.pl, alicja.poturala.stud@pw.edu.pl, jakub.sikora2.stud@pw.edu.pl
+}
+
+\newcommand{\todo}[1]{\textcolor{blue}{\textbf{TO DO:} #1}}
+\newcommand{\opracowanyartykul}[1]{\textcolor{teal}{\textbf{Artykuł:} #1\\}}
+
+\begin{document}
+\maketitle
+
+\section{Wprowadzenie}
+\label{sec:wprowadzenie}
+\input{tex/01-wprowadzenie.tex}
+
+\section{Zarys algorytmu}
+\label{sec:algorytm}
+\input{tex/02-algorytm.tex}
+
+\section{Architektura rozwiązania}
+\label{sec:architektura}
+\input{tex/03-architektura.tex}
+
+\section{Mechanizmy odpornościowe}
+\label{sec:recovery}
+\input{tex/04-recovery.tex}
+
+\section{Skalowanie rozwiązania}
+\label{sec:skalowanie}
+\input{tex/05-skalowanie.tex}
+
+\section{Podsumowanie i wnioski}
+\label{sec:podsumowanie}
+\input{tex/06-podsumowanie.tex}
+
+\bibliographystyle{acm}
+\bibliography{bibliography}
+
+\end{document}
