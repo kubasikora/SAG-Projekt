@@ -21,10 +21,3 @@ def parseMessage(string): # the format of the string [], 'break', []
         toReturn.append(sigma)
     return toReturn
 
-
-
-listaA = [[1, 2, 3, 4, 3, 4, 5],'break', [1, 2, 3]]
-
-zbiory = parseMessage(str(listaA))
-print(zbiory)
-

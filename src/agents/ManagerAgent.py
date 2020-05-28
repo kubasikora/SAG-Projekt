@@ -4,8 +4,14 @@ from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
 from Logger import Logger
+from behaviours import ControlSubordinatesBehaviour
 import json
 import asyncio
+import datetime
+
+
+
+PERIOD = 10
 
 class DeputeBehaviour(OneShotBehaviour):
     def __init__(self, agent, jidToSend):
@@ -93,11 +99,16 @@ class ManagerAgent(Agent):
         receiver_template.set_metadata("performative", "inform")
         receiver_template.set_metadata("conversation-id", "results")
         self.add_behaviour(self.waitForOptimalSequence, receiver_template)
-        
-        self.agentMonitor = MonitorAgentActivityBehaviour(self, ["paintera@localhost", "weldera@localhost", "assemblya@localhost"])
+        self.subordinates = ["paintera@localhost", "weldera@localhost", "assemblya@localhost"]
+        self.agentMonitor = MonitorAgentActivityBehaviour(self, self.subordinates)
         monitor_template = Template()
         monitor_template.set_metadata("performative", "inform")
         monitor_template.set_metadata("conversation-id", "not-active")
         self.add_behaviour(self.agentMonitor, monitor_template)
+        self.controlSubordinates = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1) , self.subordinates)
+        watchdog_template = Template()
+        watchdog_template.set_metadata("performative", "inform")
+        watchdog_template.set_metadata("conversation-id", "watchdog")
+        self.add_bevaviour(self.controlSubordinates, watchdog_template)
 
         self.logger.log_info("Manager has started")
