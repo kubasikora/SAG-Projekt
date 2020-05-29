@@ -35,7 +35,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             msg.body=str(self.subordinates[sub])
             await self.send(msg)
         currentWorking = []
-        timeout = floor(float(len(self.subordinates)) / PERIOD) - 1 
+        timeout = floor(float(PERIOD) / len(self.subordinates)) - 1 
         if timeout < 1:
             timeout = timeout + 1
         for i in range(len(self.subordinates)):

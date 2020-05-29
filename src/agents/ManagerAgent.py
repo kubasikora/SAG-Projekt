@@ -83,6 +83,9 @@ class ReceiveResultBehaviour(CyclicBehaviour):
 
 class ManagerAgent(Agent):
     async def setup(self):
+        self.waitForOptimalSequence = ReceiveResultBehaviour(self)
+
+        self.agent.logger.log_success(f"set up agent")
         self.logger = Logger(self.jid)
 
         self.painterA = DeputeBehaviour(self, "paintera@localhost")
@@ -94,7 +97,7 @@ class ManagerAgent(Agent):
         self.assemblyA = DeputeBehaviour(self, "assemblya@localhost")
         self.add_behaviour(self.assemblyA)
 
-        self.waitForOptimalSequence = ReceiveResultBehaviour(self)
+        
         receiver_template = Template()
         receiver_template.set_metadata("performative", "inform")
         receiver_template.set_metadata("conversation-id", "results")
@@ -105,10 +108,10 @@ class ManagerAgent(Agent):
         monitor_template.set_metadata("performative", "inform")
         monitor_template.set_metadata("conversation-id", "not-active")
         self.add_behaviour(self.agentMonitor, monitor_template)
-        self.controlSubordinates = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1) , self.subordinates)
-        watchdog_template = Template()
-        watchdog_template.set_metadata("performative", "inform")
-        watchdog_template.set_metadata("conversation-id", "watchdog")
-        self.add_bevaviour(self.controlSubordinates, watchdog_template)
+        #self.controlSubordinates = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1) , self.subordinates)
+        #watchdog_template = Template()
+        #watchdog_template.set_metadata("performative", "inform")
+        #watchdog_template.set_metadata("conversation-id", "watchdog")
+        #self.add_bevaviour(self.controlSubordinates, watchdog_template)
 
         self.logger.log_info("Manager has started")
