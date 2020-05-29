@@ -39,6 +39,7 @@ class FactoryAgent(Agent):
         self.B0prim = []
         self.manager = manager
         self.optimal_result = None
+        self.logger.log_warning("init done")
 
     def saveMatesBest(self, coworker, sigma):
         if sigma not in self.matesOptimal[coworker]:
@@ -105,9 +106,9 @@ class FactoryAgent(Agent):
         templateRisks = Template()
         templateRisks.to = self.Myjid
         templateRisks.metadata = {"conversation-id": "4"}
-        #templateWatchdog = Template()
-        #templateWatchdog.to = self.Myjid
-        #templateWatchdog.metadata = {"conversation-id": "watchdog"}
+        templateWatchdog = Template()
+        templateWatchdog.to = self.Myjid
+        templateWatchdog.metadata = {"conversation-id": "watchdog"}
 
         self.fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
         self.fsm.add_state(name=STATE_COMPUTE_B0, state=StateComputeB0(self))
@@ -118,6 +119,7 @@ class FactoryAgent(Agent):
         self.fsm.add_state(name=STATE_COMPUTE_CONCESSION, state=StateComputeConcession(self))
         self.fsm.add_state(name=STATE_WAIT_FOR_NEXT_ROUND, state=StateWaitForNextRound(self))
         self.fsm.add_state(name=STATE_NOT_ACTIVE, state=StateNotActive(self))
+
         self.fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
         self.fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
         self.fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
@@ -134,12 +136,12 @@ class FactoryAgent(Agent):
         self.cacb = ComputeAgentsCostBehaviour(self)
         self.csb = ComputeBetterOrEqualBehaviour(self)
         self.crb = ComputeRiskBehaviour(self)
-        #self.wb = WatchdogBehaviour(self,PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1))
+        self.wb = WatchdogBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1))
 
         self.add_behaviour(self.fsm, templateStates)
         self.add_behaviour(self.cacb, templateCost)
         self.add_behaviour(self.crb, templateRisks)
         self.add_behaviour(self.csb, templateSets)
-        #self.add_behaviour(self.wb, templateWatchdog)
+        self.add_behaviour(self.wb, templateWatchdog)
 
         

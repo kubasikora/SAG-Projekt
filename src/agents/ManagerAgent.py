@@ -5,19 +5,19 @@ from spade.message import Message
 from spade.template import Template
 from Logger import Logger
 from behaviours import ControlSubordinatesBehaviour
+from messages import WatchdogMessage, WatchdogTemplate
 import json
 import asyncio
 import datetime
 
-
-
-PERIOD = 10
+PERIOD = 20
 
 class DeputeBehaviour(OneShotBehaviour):
     def __init__(self, agent, jidToSend):
-        super().__init__()
+        OneShotBehaviour.__init__(self)
         self.agent = agent
         self.jidToSend = jidToSend
+        self.agent.logger.log_info(f"DeputeBehaviour for {jidToSend} created")
 
     async def run(self):
         self.agent.logger.log_info(f"Adding {self.jidToSend} to the team")
@@ -31,22 +31,24 @@ class DeputeBehaviour(OneShotBehaviour):
         await self.send(msg)
         self.agent.logger.log_info(f"Task sent to {self.jidToSend}")
 
-    async def on_end(self):
-        # stop agent from behaviour
-        # await self.agent.stop()    
+    async def on_end(self): 
         self.kill()
-
 
 class MonitorAgentActivityBehaviour(CyclicBehaviour):
     def __init__(self, agent, workers):
-        super().__init__()
+        CyclicBehaviour.__init__(self)
         self.agent = agent
         self.workers = dict((worker, False) for worker in workers)
+        self.agent.logger.log_info("MonitorAgentActivityBehaviour created")
+
+    async def on_start(self):
+        for _, worker in enumerate(self.workers):
+            message = WatchdogMessage(worker, body="{message: 'Hello'}")
+            await self.send(message)
 
     async def run(self):
         message = await self.receive(timeout=1)
         if message is not None:
-            result = json.loads(message.body)
             self.agent.logger.log_info(f"Agent {message.sender} reported inactivity")
             self.workers[message.sender] = True
             
@@ -68,8 +70,9 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
 
 class ReceiveResultBehaviour(CyclicBehaviour):
     def __init__(self, agent):
-        super().__init__()
+        CyclicBehaviour.__init__(self)
         self.agent = agent
+        self.agent.logger.log_info("ReceiveResultBehaviour created")
 
     async def run(self):
         message = await self.receive(timeout=1)
@@ -82,11 +85,16 @@ class ReceiveResultBehaviour(CyclicBehaviour):
         await self.agent.stop()
 
 class ManagerAgent(Agent):
-    async def setup(self):
-        self.waitForOptimalSequence = ReceiveResultBehaviour(self)
-
-        self.agent.logger.log_success(f"set up agent")
+    def __init__(self, jid, password):
+        Agent.__init__(self, jid, password)
         self.logger = Logger(self.jid)
+
+    async def setup(self):
+        receiver_template = Template()
+        receiver_template.set_metadata("performative", "inform")
+        receiver_template.set_metadata("conversation-id", "results")
+        self.waitForOptimalSequence = ReceiveResultBehaviour(self)
+        self.add_behaviour(self.waitForOptimalSequence, receiver_template)
 
         self.painterA = DeputeBehaviour(self, "paintera@localhost")
         self.add_behaviour(self.painterA)
@@ -96,22 +104,13 @@ class ManagerAgent(Agent):
 
         self.assemblyA = DeputeBehaviour(self, "assemblya@localhost")
         self.add_behaviour(self.assemblyA)
-
-        
-        receiver_template = Template()
-        receiver_template.set_metadata("performative", "inform")
-        receiver_template.set_metadata("conversation-id", "results")
-        self.add_behaviour(self.waitForOptimalSequence, receiver_template)
+   
+        monitor_template = WatchdogTemplate()
         self.subordinates = ["paintera@localhost", "weldera@localhost", "assemblya@localhost"]
-        self.agentMonitor = MonitorAgentActivityBehaviour(self, self.subordinates)
-        monitor_template = Template()
-        monitor_template.set_metadata("performative", "inform")
-        monitor_template.set_metadata("conversation-id", "not-active")
-        self.add_behaviour(self.agentMonitor, monitor_template)
-        #self.controlSubordinates = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1) , self.subordinates)
-        #watchdog_template = Template()
-        #watchdog_template.set_metadata("performative", "inform")
-        #watchdog_template.set_metadata("conversation-id", "watchdog")
-        #self.add_bevaviour(self.controlSubordinates, watchdog_template)
+        print("Sd")
+        self.agentMonitor = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1), self.subordinates)
 
+        print("xd")
+        self.add_behaviour(self.agentMonitor, monitor_template)
+        print("Ssd")
         self.logger.log_info("Manager has started")
