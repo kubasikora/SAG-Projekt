@@ -38,7 +38,7 @@ class StateComputeB0(State):
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)
                         if resp is None:
-                            self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                            self.fAgent.logger.log_error("Error in B0") #probably we should raise exception or something !!!!!!!!!!!!!
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
                                 costSeq = costSeq + int(resp.body)

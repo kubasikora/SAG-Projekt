@@ -56,7 +56,6 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             if worker is not None:
                 await worker.stop()
                 await worker.start()
-        # to do !!! how to restart the whole agent? 
 
         
                 
