@@ -85,9 +85,15 @@ class ReceiveResultBehaviour(CyclicBehaviour):
         await self.agent.stop()
 
 class ManagerAgent(Agent):
-    def __init__(self, jid, password):
+    def __init__(self, jid, password, workers):
         Agent.__init__(self, jid, password)
         self.logger = Logger(self.jid)
+        self.workers = workers
+
+    def findWorker(self, jid):
+        for worker in self.workers:
+            if worker.Myjid == jid:
+                return worker
 
     async def setup(self):
         receiver_template = Template()
@@ -107,10 +113,19 @@ class ManagerAgent(Agent):
    
         monitor_template = WatchdogTemplate()
         self.subordinates = ["paintera@localhost", "weldera@localhost", "assemblya@localhost"]
-        print("Sd")
         self.agentMonitor = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1), self.subordinates)
 
-        print("xd")
         self.add_behaviour(self.agentMonitor, monitor_template)
-        print("Ssd")
+        
+
+        #checking how restart works :) 
+
+        for worker in self.workers:
+            await worker.stop()
+            self.logger.log_error(f"Manager has stopped {worker.Myjid}")
+            await worker.start(True)
+            self.logger.log_error(f"Manager has started {worker.Myjid}")
+            #future = await worker.start()
+            #future.result()
+
         self.logger.log_info("Manager has started")

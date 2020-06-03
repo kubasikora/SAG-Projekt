@@ -22,7 +22,8 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             if sub not in responded or self.subordinates[sub] > 1:
                 toRestart.append(sub)
                 self.subordinates[sub] = 0
-       
+        return toRestart
+    
     async def run(self):
         #send messages to subordinates and wait to get response from each of them 
         for sub in self.subordinates.keys():
@@ -50,7 +51,13 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
                 else:
                     self.subordinates[str(resp.sender)] = 0
         toRestart = self.checkResponses(currentWorking)
+        for jid in toRestart:
+            worker = self.manager.findWorker(jid)
+            if worker is not None:
+                await worker.stop()
+                await worker.start()
         # to do !!! how to restart the whole agent? 
+
         
                 
 

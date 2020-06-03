@@ -24,7 +24,7 @@ if __name__ == "__main__":
     assemblyAAgent.web.start(hostname="localhost", port="10000")
     future3.result()
 
-    managerAgent = ManagerAgent("manager@localhost", "12345678")
+    managerAgent = ManagerAgent("manager@localhost", "12345678", [painterAAgent,welderAAgent , assemblyAAgent])
     managerAgent.start()
     managerAgent.web.start(hostname="localhost", port="10001")
 
