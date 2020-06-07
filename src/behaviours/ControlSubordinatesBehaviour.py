@@ -1,6 +1,7 @@
 from spade.behaviour import PeriodicBehaviour
 from spade.message import Message
 from behaviours.WatchdogBehaviour import WorkingState
+from messages import WatchdogMessage
 from math import floor
 
 PERIOD = 10
@@ -28,10 +29,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
         #send messages to subordinates and wait to get response from each of them 
         for sub in self.subordinates.keys():
             self.manager.logger.log_warning(f"Pinging {sub}")
-            msg = Message(to=str(sub))
-            msg.set_metadata("conversation-id", "watchdog")
-            msg.set_metadata("performative", "inform")
-            msg.body=str(self.subordinates[sub])
+            msg = WatchdogMessage(to=sub, body=self.subordinates[sub])
             await self.send(msg)
 
         currentWorking = []

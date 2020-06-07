@@ -4,6 +4,7 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 import json
+from messages import StatesMessage, ResultsMessage
 
 
 #sprawdzanie czy dokonano dealu 
@@ -53,19 +54,15 @@ class StateComputeProposals(State):
 
         # send it to coworkers
         for co, sigma in myAgree.items():
-            msg = Message(to=co)
+            msg = StatesMessage(to=co, body="ok")
             msg.set_metadata("performative", "accept-proposal")
-            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            msg.body = "ok"
             await self.send(msg)
+
         for co, sigma in myDisagree.items():
-            msg = Message(to=co)
+            msg = StatesMessage(to=co, body="not ok")
             msg.set_metadata("performative", "reject-proposal")
-            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            msg.body = "not ok"
             await self.send(msg) 
-
-
+            
         #check if others agree with your proposal
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)
         ok = 0
@@ -97,10 +94,8 @@ class StateComputeProposals(State):
 
         # notify other if there is or there is not an agreement
         for co in self.fAgent.activeCoworkers:
-            msg = Message(to=co)
+            msg = StatesMessage(to=co, body=body)
             msg.set_metadata("performative", perf)
-            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            msg.body = body
             await self.send(msg)      
            
         # check if there other agents proposal is correct 
@@ -128,20 +123,14 @@ class StateComputeProposals(State):
             # print(min(self.fAgent.allCalculatedCosts.values()))
             self.fAgent.optimal_result = self.fAgent.currentSigma
             for co in self.fAgent.coworkers:
-                msg = Message(to=co)
-                msg.set_metadata("performative", "inform")
-                msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-                msg.body = "We have got it!"
+                msg = StatesMessage(to=co, body="We have got it!")
                 await self.send(msg) 
 
-            result_message = Message(to=self.fAgent.manager)
-            result_message.set_metadata("performative", "inform")
-            result_message.set_metadata("conversation-id", "results")
             result_dict = {
                 "sequence": self.fAgent.currentSigma,
                 "cost": self.fAgent.getCostAll(str(self.fAgent.currentSigma))
             }
-            result_message.body = json.dumps(result_dict)
+            result_message = ResultsMessage(to=self.fAgent.manager, body=json.dumps(result_dict))
             await self.send(result_message)
 
             self.set_next_state(STATE_NOT_ACTIVE)

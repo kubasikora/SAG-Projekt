@@ -3,6 +3,7 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
+from messages import StatesMessage
 
 
 class StateWaitForNextRound(State):
@@ -19,11 +20,8 @@ class StateWaitForNextRound(State):
         #firstly we should inform then that we are ready
 
         for co in self.fAgent.activeCoworkers:
-            msg = Message(to=co)
-            msg.set_metadata("performative", "inform")
-            msg.set_metadata("language","boolean" )
-            msg.set_metadata("conversation-id", "1")
-            msg.body = str(True)
+            msg = StatesMessage(to=co, body=True)
+            msg.set_metadata("language", "boolean")
             await self.send(msg)
 
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)

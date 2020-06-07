@@ -3,6 +3,7 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
+from messages import StatesMessage
 
 
 class StateComputeRisk(State):
@@ -28,11 +29,8 @@ class StateComputeRisk(State):
 
         self.fAgent.logger.log_info(f"My risk equals {myRisk}")
         for co in self.fAgent.activeCoworkers:
-            msg = Message(to=co)
-            msg.set_metadata("performative", "inform")
-            msg.set_metadata("language","float" )
-            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            msg.body = str(myRisk)
+            msg = StatesMessage(to=co, body=myRisk)
+            msg.set_metadata("language", "float")
             await self.send(msg)
 
         # waiting for all responses from agents!!!

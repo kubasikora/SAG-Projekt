@@ -145,7 +145,7 @@ class StateInitial(State):
         sublistA = self.createSubLists(items, indexes[0])
         sublistB = self.createSubLists(items, indexes[1])
         sublistC = self.createSubLists(items, indexes[2])
-        #print("sublist A "+str(len(sublistA)) + " sublist B "+str(len(sublistB)) + " sublist C "+str(len(sublistC))+" my name" +self.fAgent.nameMy)
+        
         B0prim = []
         if len(sublistA) > 0 and len(sublistB) > 0 and len(sublistC) > 0:
             for l in sublistA:
@@ -181,13 +181,16 @@ class StateInitial(State):
         else:
             for el in sublistC:
                 B0prim.append(el)
-        #print("all calculated")
         return B0prim
 
 
     async def run(self):
         self.fAgent.logger.log_info(f"Starting state init: agent {self.fAgent.nameMy}")
+        if len(self.fAgent.behaviours) != 0:
+            self.fAgent.logger.log_error(f"fsm state = {self.fAgent.behaviours[0]}")
+        
         self.fAgent.clearTables()
+
         msg = await self.receive(timeout=30) 
         if msg is not None:
             res = string2Dict(msg.body)       
@@ -199,9 +202,12 @@ class StateInitial(State):
             else:
                 self.fAgent.logger.log_info(f"the worst i can get {str(worst)}")
                 self.fAgent.worst = worst
+
                 B0prim = self.createB0prim(res)
                 self.fAgent.logger.log_info(f"my Bprim size is {str(len(B0prim))}")
+
                 self.fAgent.B0prim = B0prim
+                self.fAgent.logger.log_success("Going to state compute b0")
                 self.set_next_state(STATE_COMPUTE_B0)
         else:
             self.set_next_state(STATE_INIT)

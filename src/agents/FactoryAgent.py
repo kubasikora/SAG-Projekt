@@ -1,22 +1,11 @@
-import time
-from spade.agent import Agent
-from states import *
-from spade.behaviour import FSMBehaviour
-from spade.template import Template
-from behaviours import ComputeAgentsCostBehaviour, ComputeRiskBehaviour, ComputeBetterOrEqualBehaviour, WatchdogBehaviour
-from Logger import Logger
 import datetime
+from spade.agent import Agent
+from spade.template import Template
+from messages import *
+from behaviours import *
+from Logger import Logger
 
 PERIOD = 10
-
-class NegotiateFSMBehaviour(FSMBehaviour):
-    def __init__(self, agent):
-        FSMBehaviour.__init__(self)
-        self.fAgent = agent
-
-    async def on_end(self):
-        self.fAgent.logger.log_success(f"Finishing at state {self.current_state}")
-        #await self.agent.stop()
 
 class FactoryAgent(Agent):
     def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager):
@@ -39,6 +28,13 @@ class FactoryAgent(Agent):
         self.B0prim = []
         self.manager = manager
         self.optimal_result = None
+
+        self.fsm = None
+        self.crb = None
+        self.csb = None
+        self.cacb = None
+        self.wb = None
+
         self.logger.log_warning("init done")
 
     def saveMatesBest(self, coworker, sigma):
@@ -52,6 +48,7 @@ class FactoryAgent(Agent):
             return "b"
         else:
             return "c"
+
     def computeCost(self, sequence):
         cost = len(sequence) * self.pricePerEl
         lastType = "n"
@@ -62,6 +59,7 @@ class FactoryAgent(Agent):
                 lastType = c
         cost = cost - self.pricePerChange
         return cost
+
     def getMyCost(self, string, sequence):
         string = string.replace(" ", "")     
         if string in self.myCalculatedCosts:
@@ -70,6 +68,7 @@ class FactoryAgent(Agent):
             cost = self.computeCost(sequence)
             self.myCalculatedCosts[string] = cost
             return cost
+
     def clearTables(self):
         self.myProposals = []
         self.myWorstProposal = []
@@ -86,62 +85,43 @@ class FactoryAgent(Agent):
             return self.allCalculatedCosts[string]
         else:
             return -1
+
     def setCostAll(self, string, cost):
         string = string.replace(" ", "")  
         self.allCalculatedCosts[string] = cost
+
     def saveMessage(self, msg):
         self.mailboxForLater.append(msg)
     
     async def setup(self):
-        self.fsm = NegotiateFSMBehaviour(self)
-        templateStates = Template()
-        templateStates.to = self.Myjid
-        templateStates.metadata = {"conversation-id": "1"}
-        templateCost = Template()
-        templateCost.to = self.Myjid
-        templateCost.metadata = {"conversation-id": "2"}
-        templateSets = Template()
-        templateSets.to = self.Myjid
-        templateSets.metadata = {"conversation-id": "3"}
-        templateRisks = Template()
-        templateRisks.to = self.Myjid
-        templateRisks.metadata = {"conversation-id": "4"}
-        templateWatchdog = Template()
-        templateWatchdog.to = self.Myjid
-        templateWatchdog.metadata = {"conversation-id": "watchdog"}
+        self.logger.log_success("Setting up agent behaviours")
+                
+        if self.fsm is None:
+            self.fsm = NegotiateFSMBehaviour(self)
+            templateStates = StatesMessage.template(self.Myjid)
+            self.add_behaviour(self.fsm, templateStates)
+        
+        if self.cacb is None:
+            self.cacb = ComputeAgentsCostBehaviour(self)
+            templateCost = CostMessage.template(self.Myjid)
+            self.add_behaviour(self.cacb, templateCost)
 
-        self.fsm.add_state(name=STATE_INIT, state=StateInitial(self), initial=True)
-        self.fsm.add_state(name=STATE_COMPUTE_B0, state=StateComputeB0(self))
-        self.fsm.add_state(name=STATE_PROPOSE, state=StatePropose(self))
-        self.fsm.add_state(name=STATE_WAIT_FOR_PROPSALS, state=StateWaitForProposals(self))
-        self.fsm.add_state(name=STATE_COMPUTE_PROPOSALS, state=StateComputeProposals(self))
-        self.fsm.add_state(name=STATE_COMPUTE_RISK, state=StateComputeRisk(self))
-        self.fsm.add_state(name=STATE_COMPUTE_CONCESSION, state=StateComputeConcession(self))
-        self.fsm.add_state(name=STATE_WAIT_FOR_NEXT_ROUND, state=StateWaitForNextRound(self))
-        self.fsm.add_state(name=STATE_NOT_ACTIVE, state=StateNotActive(self))
+        if self.crb is None:
+            self.crb = ComputeRiskBehaviour(self)
+            templateRisks = RiskMessage.template(self.Myjid)
+            self.add_behaviour(self.crb, templateRisks)           
 
-        self.fsm.add_transition(source=STATE_INIT, dest=STATE_INIT)
-        self.fsm.add_transition(source=STATE_INIT, dest=STATE_COMPUTE_B0)
-        self.fsm.add_transition(source=STATE_COMPUTE_B0, dest=STATE_PROPOSE)
-        self.fsm.add_transition(source=STATE_PROPOSE, dest=STATE_WAIT_FOR_PROPSALS)
-        self.fsm.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_COMPUTE_PROPOSALS) # compute_proposals might be final if agreement found
-        self.fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_COMPUTE_RISK)
-        self.fsm.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_NOT_ACTIVE)
-        self.fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_COMPUTE_CONCESSION)
-        self.fsm.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_WAIT_FOR_NEXT_ROUND)
-        self.fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_WAIT_FOR_NEXT_ROUND)
-        self.fsm.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_NOT_ACTIVE)
-        self.fsm.add_transition(source=STATE_WAIT_FOR_NEXT_ROUND, dest=STATE_PROPOSE)
+        if self.csb is None:
+            self.csb = ComputeBetterOrEqualBehaviour(self)    
+            templateSets = SetsMessage.template(self.Myjid)
+            self.add_behaviour(self.csb, templateSets)
 
-        self.cacb = ComputeAgentsCostBehaviour(self)
-        self.csb = ComputeBetterOrEqualBehaviour(self)
-        self.crb = ComputeRiskBehaviour(self)
-        self.wb = WatchdogBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1))
-
-        self.add_behaviour(self.fsm, templateStates)
-        self.add_behaviour(self.cacb, templateCost)
-        self.add_behaviour(self.crb, templateRisks)
-        self.add_behaviour(self.csb, templateSets)
-        self.add_behaviour(self.wb, templateWatchdog)
+        if self.wb is None:
+            self.wb = WatchdogBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1))
+            templateWatchdog = WatchdogMessage.template(self.Myjid)
+            self.add_behaviour(self.wb, templateWatchdog)
+        
+        self.logger.log_success("All behaviours set up")
+        
 
         

@@ -3,3 +3,4 @@ from .ComputeBetterOrEqualBehaviour import ComputeBetterOrEqualBehaviour
 from .ComputeRiskBehaviour import ComputeRiskBehaviour
 from .ControlSubordinatesBehaviour import ControlSubordinatesBehaviour
 from .WatchdogBehaviour import WatchdogBehaviour, WorkingState
+from .NegotiateFSMBehaviour import NegotiateFSMBehaviour

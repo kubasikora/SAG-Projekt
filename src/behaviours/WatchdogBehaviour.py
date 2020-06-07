@@ -23,7 +23,7 @@ class WatchdogBehaviour(PeriodicBehaviour):
         for behaviour in self.fAgent.behaviours:
             if behaviour.is_killed():
                 behaviour.start()
-                self.manager.logger.log_error("Behaviour {str(behaviour)} killed")
+                self.manager.logger.log_error(f"Behaviour {str(behaviour)} killed")
                 toRet = WorkingState.RESTARTING
         return toRet
 
@@ -36,7 +36,7 @@ class WatchdogBehaviour(PeriodicBehaviour):
         else:
             self.fAgent.logger.log_warning("Got message")
             self.counter = 0
-            resp = WatchdogMessage(str(self.fAgent.jid), str(msg.sender), str(self.checkState))
+            resp = WatchdogMessage(to=msg.sender, body=self.checkState)
             await self.send(resp)
 
         if self.counter > 1:
