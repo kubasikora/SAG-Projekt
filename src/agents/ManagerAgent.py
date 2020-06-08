@@ -5,7 +5,7 @@ from spade.message import Message
 from spade.template import Template
 from Logger import Logger
 from behaviours import ControlSubordinatesBehaviour
-from messages import WatchdogMessage, WatchdogTemplate
+from messages import *
 import json
 import asyncio
 import datetime
@@ -21,14 +21,12 @@ class DeputeBehaviour(OneShotBehaviour):
 
     async def run(self):
         self.agent.logger.log_info(f"Adding {self.jidToSend} to the team")
-        msg = Message(to=self.jidToSend)     # Instantiate the message
-        msg.set_metadata("conversation-id", "1")
-        msg.set_metadata("performative", "request")  # Set the "inform" FIPA performative
-        msg.set_metadata("language","dictionary" )
-        # dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:7, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:0, 18:0, 19:0, 20:0, 21:0, 22:0, 23:0, 24:0, 25:6, 26:0}
         dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:7, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:5, 18:0, 19:0, 20:1, 21:9, 22:3, 23:0, 24:0, 25:6, 26:0}
-        msg.body = str(dictTest)
+        
+        msg = StatesMessage(to=self.jidToSend, body=dictTest)
+        msg.set_metadata("performative", "request")     # Instantiate the message
         await self.send(msg)
+
         self.agent.logger.log_info(f"Task sent to {self.jidToSend}")
 
     async def on_end(self): 
@@ -43,7 +41,7 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
 
     async def on_start(self):
         for _, worker in enumerate(self.workers):
-            message = WatchdogMessage(worker, body="{message: 'Hello'}")
+            message = WatchdogMessage(to=worker, body="{message: 'Hello'}")
             await self.send(message)
 
     async def run(self):
@@ -59,10 +57,7 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
 
             if logic_accumulator:
                 # all agents reported inactivity
-                fwd = Message(to=message.to)
-                fwd.set_metadata("performative", "inform")
-                fwd.set_metadata("conversation-id", "results")
-                fwd.body = message.body
+                fwd = ResultsMessage(to=message.to, body=message.body)
                 await self.send(fwd) # forward message to receiver behaviour
             
     async def on_end(self):
@@ -87,6 +82,7 @@ class ReceiveResultBehaviour(CyclicBehaviour):
 class ManagerAgent(Agent):
     def __init__(self, jid, password, workers):
         Agent.__init__(self, jid, password)
+        self.MyJid = jid
         self.logger = Logger(self.jid)
         self.workers = workers
 
@@ -96,9 +92,7 @@ class ManagerAgent(Agent):
                 return worker
 
     async def setup(self):
-        receiver_template = Template()
-        receiver_template.set_metadata("performative", "inform")
-        receiver_template.set_metadata("conversation-id", "results")
+        receiver_template = ResultsMessage.template(self.MyJid)
         self.waitForOptimalSequence = ReceiveResultBehaviour(self)
         self.add_behaviour(self.waitForOptimalSequence, receiver_template)
 
@@ -111,28 +105,26 @@ class ManagerAgent(Agent):
         self.assemblyA = DeputeBehaviour(self, "assemblya@localhost")
         self.add_behaviour(self.assemblyA)
    
-        monitor_template = WatchdogTemplate()
+        monitor_template = WatchdogMessage.template(self.MyJid)
         self.subordinates = ["paintera@localhost", "weldera@localhost", "assemblya@localhost"]
         self.agentMonitor = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1), self.subordinates)
 
         self.add_behaviour(self.agentMonitor, monitor_template)
-        
+
+        self.agentMonitor = MonitorAgentActivityBehaviour(self, ["paintera@localhost", "weldera@localhost", "assemblya@localhost"])
+        monitor_template = InactiveMessage.template(self.MyJid)
+        self.add_behaviour(self.agentMonitor, monitor_template)
+
+
         #checking how restart works :) 
-        for worker in self.workers:
-            await worker.stop()
-            print("stopped")
-            #future.result()
-            print("stopped result")
-            #self.logger.log_error(f"Manager has stopped {worker.Myjid}")
-            #future1 = await worker.start(True)
-            #future1.result()
-            #print("start")
-            #self.logger.log_error(f"Manager has started {worker.Myjid}")
-            #future = await worker.start()
-            #future.result()
-        time.sleep(10.0)
-        for worker in self.workers:
-            print("Start")
-            await worker.start()
+
+        # for worker in self.workers:
+        #     future = await worker.stop()
+        #     future.result()
+        #     self.logger.log_error(f"Manager has stopped {worker.Myjid}")
+        #     await worker.start(True)
+        #     self.logger.log_error(f"Manager has started {worker.Myjid}")
+        #     #future = await worker.start()
+        #     #future.result()
 
         self.logger.log_info("Manager has started")

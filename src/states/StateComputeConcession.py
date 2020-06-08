@@ -4,6 +4,7 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 import random
+from messages import *
 
 def parseSets(string): # the format of the string [[[],[], ..], 'break', [[],[],...]]
     string = string.replace(" ", "")
@@ -60,10 +61,9 @@ class StateComputeConcession(State):
         #1. we should propose something what is at least as good for our mates as the one whe proposed before
         # we should propopse something that for one agent is better
         for co in self.fAgent.activeCoworkers:
-            msg = Message(to=co)     # Instantiate the message
+            msg = SetsMessage(to=co, body=self.fAgent.currentSigma)     # Instantiate the message
             msg.set_metadata("performative", "request")
-            msg.set_metadata("language","list" )
-            msg.set_metadata("conversation-id", "3")
+            msg.set_metadata("language","list")
             msg.body = str(self.fAgent.currentSigma)
             await self.send(msg)
 
@@ -110,15 +110,14 @@ class StateComputeConcession(State):
             myRisk = self.computeRisk(s,others)
             found = False
             for co in self.fAgent.activeCoworkers:
-                msg = Message(to=co)
-                msg.set_metadata("performative", "request")
-                msg.set_metadata("language","list" )
-                msg.set_metadata("conversation-id", "4")
                 body = []
                 body.append(s)
                 body.append('break')
                 body.append(self.fAgent.matesProposals[co][len(self.fAgent.matesProposals[co]) - 1])
-                msg.body = str(body)
+
+                msg = RiskMessage(to=co, body=body)
+                msg.set_metadata("performative", "request")
+                msg.set_metadata("language", "list")
                 await self.send(msg)
 
                 received = False
@@ -154,12 +153,10 @@ class StateComputeConcession(State):
                 tempCost = costAllTemp
             else:
                 for co in self.fAgent.coworkers:
-                    msg=Message(to=cp)
-                    msg.set_metadata("conversation-id", "2")
-                    msg.set_metadata("performative", "request")
+                    msg=CostMessage(to=cp, body=s)
                     msg.set_metadata("save", "False")
-                    msg.body = str(s)
                     await self.send(msg)
+
                     gotResponse = False
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)

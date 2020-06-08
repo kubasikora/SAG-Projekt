@@ -3,6 +3,7 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from spade.message import Message
 from .metadata import *
+from messages import StatesMessage
 
 
 class StatePropose(State):
@@ -20,11 +21,9 @@ class StatePropose(State):
             myProposition.append(sigma)
         activeCoworkers = self.fAgent.activeCoworkers
         for coworker in activeCoworkers:
-            msg = Message(to=coworker)
+            msg = StatesMessage(to=coworker, body=sigma)
             msg.set_metadata("performative", "propose")
-            msg.set_metadata("language","list" )
-            msg.set_metadata("conversation-id", "1") #here an error occured -> the agent got message too early
-            msg.body = str(sigma)
+            msg.set_metadata("language","list")
             await self.send(msg)
         self.set_next_state(STATE_WAIT_FOR_PROPSALS)
         #bezposrednia zmiana stanu do oczekiwania na przyjecie odpowiedzi

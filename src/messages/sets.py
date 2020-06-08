@@ -1,15 +1,14 @@
 from spade.template import Template
 from spade.message import Message
 
-WATCHDOG_TOPIC = "watchdog"
+SETS_TOPIC = "sets"
 
-class WatchdogTemplate(Template):
+class SetsTemplate(Template):
     def __init__(self):
         super(Template, self).__init__()
-        self.set_metadata("conversation-id", WATCHDOG_TOPIC)
-        self.set_metadata("performative", "inform")
+        self.set_metadata("conversation-id", SETS_TOPIC)
 
-class WatchdogMessage(Message):
+class SetsMessage(Message):
     def __init__(self, to=None, body=None):
         super(Message, self).__init__()
         if isinstance(to, str):
@@ -17,12 +16,10 @@ class WatchdogMessage(Message):
         else:
             self.to = str(to)
 
-        self.set_metadata("conversation-id", WATCHDOG_TOPIC)
-        self.set_metadata("performative", "inform")
-        
+        self.set_metadata("conversation-id", SETS_TOPIC)
         self.body = str(body)
 
     def template(to=None):
-        template = WatchdogTemplate()
+        template = SetsTemplate()
         template.to = to
         return template

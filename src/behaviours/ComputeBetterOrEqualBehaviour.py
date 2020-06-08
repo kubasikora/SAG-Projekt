@@ -1,6 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from agents import FactoryAgent
 from spade.message import Message
+from messages import StatesMessage
 """
     Zachowanie do wyznaczania zbioru sekwencji, ktore dla danego agenta generuja lepszy lub przynajmniej taki samy koszt
 """
@@ -51,14 +52,9 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
                 response.append(sets[0])
                 response.append("break")
                 response.append(sets[1])
-                #response.append(self.createSetBetter(changes))
-                #response.append("break")
-                #response.append(self.createSetEqual)
-                msgResp = Message(to=str(msg.sender))     # Instantiate the message
-                msgResp.set_metadata("performative", "inform")
-                msgResp.set_metadata("language","list" )
-                msgResp.set_metadata("conversation-id", "1")
-                msgResp.body = str(response)
+
+                msgResp = StatesMessage(to=msg.sender, body=response)
+                msgResp.set_metadata("language", "list")
                 await self.send(msgResp)
 
     async def on_end(self):

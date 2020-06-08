@@ -1,6 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from agents import FactoryAgent
 from spade.message import Message
+from messages import StatesMessage
 
 
 def parseMessage(string): # the format of the string [], 'break', []
@@ -44,11 +45,9 @@ class ComputeRiskBehaviour(CyclicBehaviour):
                 #print(msg.body)
                 sigmas = parseMessage(msg.body) #sigmas[0] - other sigmas[1] - my
                 risk = self.computeRisk(sigmas[1], sigmas[0])
-                msgResp = Message(to=str(msg.sender))     # Instantiate the message
+                msgResp = StatesMessage(to=msg.sender, body=risk)     # Instantiate the message
                 msgResp.set_metadata("performative", "inform")
-                msgResp.set_metadata("language","float" )
-                msgResp.set_metadata("conversation-id", "1")
-                msgResp.body = str(risk)
+                msgResp.set_metadata("language", "float")
                 await self.send(msgResp)
 
     async def on_end(self):

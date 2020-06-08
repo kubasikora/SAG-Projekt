@@ -1,6 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from agents import FactoryAgent
 from spade.message import Message
+from messages import StatesMessage
 
 class ComputeAgentsCostBehaviour(CyclicBehaviour):
     def __init__(self, agent):
@@ -20,17 +21,15 @@ class ComputeAgentsCostBehaviour(CyclicBehaviour):
     async def run(self):
         msg = await self.receive(timeout = 5)
         if msg is not None:
-            #print("Got a message!")
-            if(msg.body is not ""):
+            if msg.body is not "":
                 sigma = self.parseMessage(msg.body)
                 cost = self.fAgent.getMyCost(msg.body, sigma)
+
                 if msg.metadata["save"] == "True":
                     self.fAgent.saveMatesBest(str(msg.sender), sigma)
-                msgResp = Message(to=str(msg.sender))     # Instantiate the message
-                msgResp.set_metadata("performative", "inform")
-                msgResp.set_metadata("language","int" )
-                msgResp.set_metadata("conversation-id", "1")
-                msgResp.body = str(cost)
+                
+                msgResp = StatesMessage(to=msg.sender, body=cost)
+                msgResp.set_metadata("language", "int")
                 await self.send(msgResp)
 
     async def on_end(self):

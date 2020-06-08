@@ -4,6 +4,7 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 import json
+from messages import StatesMessage, InactiveMessage
 
 class StateNotActive(State):
     
@@ -15,26 +16,19 @@ class StateNotActive(State):
         if self.fAgent.optimal_result is None:
             self.fAgent.logger.log_warning(f"Aight, imma head out - disactivating with last cost {min(self.fAgent.allCalculatedCosts.values())}")
             for co in self.fAgent.activeCoworkers:
-                msg = Message(to=co)
-                msg.set_metadata("performative", "inform")
-                msg.set_metadata("language","boolean" )
-                msg.set_metadata("conversation-id", "1")
-                msg.body = "False"
+                msg = StatesMessage(to=co, body="False")
+                msg.set_metadata("language", "boolean")
                 await self.send(msg)
 
             # inform manager that agent went inactive
-            message = Message(to=self.fAgent.manager)
-            message.set_metadata("performative", "inform")
-            message.set_metadata("conversation-id", "not-active")
             result = {
                 "last_sequence": self.fAgent.currentSigma,
                 "cost": self.fAgent.getCostAll(str(self.fAgent.currentSigma))
             }
-            message.body = json.dumps(result)
+            message = InactiveMessage(to=self.fAgent.manager, body=json.dumps(result))
             await self.send(message)
 
         end = False
-
         while(end == False):
             resp = await self.receive(timeout=10)
             if resp is not None:
