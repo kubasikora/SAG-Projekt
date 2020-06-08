@@ -117,15 +117,22 @@ class ManagerAgent(Agent):
 
         self.add_behaviour(self.agentMonitor, monitor_template)
         
-
         #checking how restart works :) 
-
         for worker in self.workers:
             await worker.stop()
-            self.logger.log_error(f"Manager has stopped {worker.Myjid}")
-            await worker.start(True)
-            self.logger.log_error(f"Manager has started {worker.Myjid}")
+            print("stopped")
+            #future.result()
+            print("stopped result")
+            #self.logger.log_error(f"Manager has stopped {worker.Myjid}")
+            #future1 = await worker.start(True)
+            #future1.result()
+            #print("start")
+            #self.logger.log_error(f"Manager has started {worker.Myjid}")
             #future = await worker.start()
             #future.result()
+        time.sleep(10.0)
+        for worker in self.workers:
+            print("Start")
+            await worker.start()
 
         self.logger.log_info("Manager has started")

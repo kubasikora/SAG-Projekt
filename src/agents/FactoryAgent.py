@@ -93,6 +93,7 @@ class FactoryAgent(Agent):
         self.mailboxForLater.append(msg)
     
     async def setup(self):
+        self.logger.log_warning("Set up")
         self.fsm = NegotiateFSMBehaviour(self)
         templateStates = Template()
         templateStates.to = self.Myjid

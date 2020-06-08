@@ -53,9 +53,9 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
         toRestart = self.checkResponses(currentWorking)
         for jid in toRestart:
             worker = self.manager.findWorker(jid)
-            if worker is not None:
-                await worker.stop()
-                await worker.start()
+            #if worker is not None:
+                #await worker.stop()
+                #await worker.start()
 
         
                 
