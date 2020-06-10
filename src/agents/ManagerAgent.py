@@ -1,5 +1,6 @@
 import time
 from spade.agent import Agent
+from .FactoryAgent import FactoryAgent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
@@ -12,22 +13,32 @@ import datetime
 
 PERIOD = 20
 
-class DeputeBehaviour(OneShotBehaviour):
-    def __init__(self, agent, jidToSend):
+class DeputeBehaviour(OneShotBehaviour): 
+    def __init__(self, agent, params): #params is a dic of (jid, password, name, priceEle, priceChan, sameIndex, coworkers)
         OneShotBehaviour.__init__(self)
         self.agent = agent
-        self.jidToSend = jidToSend
-        self.agent.logger.log_info(f"DeputeBehaviour for {jidToSend} created")
+        self.params = params
+        #self.agent.logger.log_info(f"DeputeBehaviour for {self.jidToSend} created")
 
     async def run(self):
-        self.agent.logger.log_info(f"Adding {self.jidToSend} to the team")
-        dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:7, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:5, 18:0, 19:0, 20:1, 21:9, 22:3, 23:0, 24:0, 25:6, 26:0}
-        
-        msg = StatesMessage(to=self.jidToSend, body=dictTest)
-        msg.set_metadata("performative", "request")     # Instantiate the message
-        await self.send(msg)
+        dictTest = self.agent.task
+        for p in self.params:
+            jid =p["jid"]
+            self.agent.logger.log_info(f"Adding {jid} to the team")
+            created = FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost")
+            self.agent.workers.append(created)
+            await created.start()
+            created.web.start(hostname="localhost", port="10000")
+            self.agent.logger.log_info(f"DeputeBehaviour for {jid} created")
 
-        self.agent.logger.log_info(f"Task sent to {self.jidToSend}")
+        for p in self.params:
+            jid = p["jid"]
+            msg = StatesMessage(to=jid, body=dictTest)
+            msg.set_metadata("performative", "request")     # Instantiate the message
+            await self.send(msg)
+            self.agent.logger.log_info(f"Task sent to {jid}")
+
+        self.agent.logger.log_info(f"Every task sent")
 
     async def on_end(self): 
         self.kill()
@@ -80,11 +91,13 @@ class ReceiveResultBehaviour(CyclicBehaviour):
         await self.agent.stop()
 
 class ManagerAgent(Agent):
-    def __init__(self, jid, password, workers):
+    def __init__(self, jid, password, workersParams, task): #workersParams to lista slownikow (jid, password, name, priceEle, priceChan, sameIndex, coworkers)
         Agent.__init__(self, jid, password)
         self.MyJid = jid
         self.logger = Logger(self.jid)
-        self.workers = workers
+        self.workersParams = workersParams
+        self.task = task
+        self.workers = []
 
     def findWorker(self, jid):
         for worker in self.workers:
@@ -92,39 +105,25 @@ class ManagerAgent(Agent):
                 return worker
 
     async def setup(self):
+
+        self.creator = DeputeBehaviour(self, self.workersParams)
+        self.add_behaviour(self.creator)
+        
+        workersJid = []
+        for workerParams in self.workersParams:
+            workersJid.append(workerParams["jid"])  # to give params to rest behaviours
+
         receiver_template = ResultsMessage.template(self.MyJid)
         self.waitForOptimalSequence = ReceiveResultBehaviour(self)
-        self.add_behaviour(self.waitForOptimalSequence, receiver_template)
+        self.add_behaviour(self.waitForOptimalSequence, receiver_template) 
+        
+        watchdog_template = WatchdogMessage.template(self.MyJid)
+        self.agentControler = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=3), workersJid)
+        self.add_behaviour(self.agentControler, watchdog_template)
 
-        self.painterA = DeputeBehaviour(self, "paintera@localhost")
-        self.add_behaviour(self.painterA)
-
-        self.welderA = DeputeBehaviour(self, "weldera@localhost")
-        self.add_behaviour(self.welderA)
-
-        self.assemblyA = DeputeBehaviour(self, "assemblya@localhost")
-        self.add_behaviour(self.assemblyA)
-   
-        monitor_template = WatchdogMessage.template(self.MyJid)
-        self.subordinates = ["paintera@localhost", "weldera@localhost", "assemblya@localhost"]
-        self.agentMonitor = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=1), self.subordinates)
-
-        self.add_behaviour(self.agentMonitor, monitor_template)
-
-        self.agentMonitor = MonitorAgentActivityBehaviour(self, ["paintera@localhost", "weldera@localhost", "assemblya@localhost"])
         monitor_template = InactiveMessage.template(self.MyJid)
+        self.agentMonitor = MonitorAgentActivityBehaviour(self, workersJid)
         self.add_behaviour(self.agentMonitor, monitor_template)
 
-
-        #checking how restart works :) 
-
-        # for worker in self.workers:
-        #     future = await worker.stop()
-        #     future.result()
-        #     self.logger.log_error(f"Manager has stopped {worker.Myjid}")
-        #     await worker.start(True)
-        #     self.logger.log_error(f"Manager has started {worker.Myjid}")
-        #     #future = await worker.start()
-        #     #future.result()
 
         self.logger.log_info("Manager has started")

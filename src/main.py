@@ -8,23 +8,15 @@ from spade.agent import Agent
 if __name__ == "__main__":
     logger = Logger("main")
     logger.log_info("Start")
+    dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:7, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:5, 18:0, 19:0, 20:1, 21:9, 22:3, 23:0, 24:0, 25:6, 26:0}
 
-    painterAAgent = FactoryAgent("paintera@localhost", "12345678","PainterA",5, 5, getSameIndexesColors(),["assemblya@localhost", "weldera@localhost"], "manager@localhost")
-    future = painterAAgent.start()
-    painterAAgent.web.start(hostname="localhost", port="10000")
-    future.result()
+    painterPar={"jid": "paintera@localhost", "password": "12345678", "name":"PainterA" , "priceEle":5 , "priceChan":5, "sameIndex":getSameIndexesColors() , "coworkers": ["assemblya@localhost", "weldera@localhost"]}
+    welderPar={"jid":"weldera@localhost" , "password": "12345678", "name":"WelderA" , "priceEle":5, "priceChan": 5,"sameIndex":getSameIndexesBody() , "coworkers": ["assemblya@localhost", "paintera@localhost"]}
+    assemblyPar={"jid": "assemblya@localhost", "password": "12345678", "name": "AssemblyA", "priceEle":5, "priceChan": 5,"sameIndex":getSameIndexesEngine() , "coworkers":["weldera@localhost", "paintera@localhost"] }
 
-    welderAAgent = FactoryAgent("weldera@localhost", "12345678","WelderA",5, 5, getSameIndexesBody(),["assemblya@localhost", "paintera@localhost"], "manager@localhost")
-    future2 = welderAAgent.start()
-    welderAAgent.web.start(hostname="localhost", port="10000")
-    future2.result()
+    params = [painterPar,welderPar, assemblyPar ]
 
-    assemblyAAgent = FactoryAgent("assemblya@localhost", "12345678","AssemblyA",5, 5, getSameIndexesEngine(),["weldera@localhost", "paintera@localhost"], "manager@localhost")
-    future3 = assemblyAAgent.start()
-    assemblyAAgent.web.start(hostname="localhost", port="10000")
-    future3.result()
-
-    managerAgent = ManagerAgent("manager@localhost", "12345678", [painterAAgent,welderAAgent , assemblyAAgent])
+    managerAgent = ManagerAgent("manager@localhost", "12345678",params, dictTest)
     managerAgent.start()
     managerAgent.web.start(hostname="localhost", port="10001")
 
@@ -34,9 +26,6 @@ if __name__ == "__main__":
             if managerAgent.waitForOptimalSequence.is_killed():
                 break
         except KeyboardInterrupt:
-            painterAAgent.stop()
-            welderAAgent.stop()
-            assemblyAAgent.stop()
             managerAgent.stop()
             break
 
