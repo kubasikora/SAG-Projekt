@@ -1,1 +1,9 @@
-\todo{przedstawić algorytm z~\cite{wooldridge1996production} negocjacji pomiędzy agentami, generalnie przepisać to z artykułu plus może wstawić jakiś schemat blokowy?}
+Przedstawiony algorytm negocjacji został zaczerpnięty z~pracy \emph{Production sequencing as negotiation}~\cite{wooldridge1996production}. W~ninejszej pracy, autorzy proponują rozwiązanie problemu planowania sekwencji pracy w~fabryce, zamieniając problem na zadanie negocjacji w~systemie agentowym.
+
+Pomysł zamiany problemu na zadanie negocjacji opiera się na założeniu że fabrykę można podzielić na kilka komórek. Z~każdą komórką związana jest funkcja kosztu, która opisuje pewien koszt wytworzenia elementu. Koszt produkcji związany jest z~zarówno wykonaniem samego elementu, jak i~zależy od wcześniej wykonywanego elementu. Przykładowo, stacja lakiernicza, która ostatnio pracowała z~czerwonym lakierem, w~celu wykonania zielonego elementu, musi zmienić lakier, wyczyścić dysze oraz wykonać szereg innych prac, z~którymi można utożsamić pewien koszt.
+
+W~systemie agentowym, negocjacja sekwencji polega na rozmowie pomiędzy agentami, reprezentującymi poszczególne komórki fabryki, podczas której każdy z~agentów próbuje zmaksymalizować swoją funkcję użyteczności, czyli \emph{de facto} zminimalizować swój koszt. Koszt związany z~samą produkcją jest stały dla każdej zadanej sekwencji, dlatego też minimalizowany będzie koszt zmian typu produktu.
+
+Podejście agentowe ma wiele zalet. W~pierwszej kolejności, takie rozwiązanie jest modularne, co pozwala na łatwe rozszerzanie, dołączanie i~wyłączanie komponentów. Rozbicie problemu na podproblemy, pozwala znacząco uprościć problem optymalizacji oraz potencjalnie przyspieszyć proces szukania rozwiązania, poprzez zrównoleglenie obliczeń.
+
+\todo{tu opisać algorytm negocjacji pomiędzy agentami}
