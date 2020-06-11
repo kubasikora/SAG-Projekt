@@ -4,6 +4,7 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 from behaviours import WorkingState
+from messages import StatesMessage
 
 MAX_TIME = 5 # 5 min is the max time of waiting for all other guys
 
