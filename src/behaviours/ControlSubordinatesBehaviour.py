@@ -43,7 +43,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
                 self.manager.logger.log_warning("No response!")
             else:
                 self.manager.logger.log_warning("Ping responded!")
-                if str(WorkingState.COMPLAIN) in resp.body:
+                if str(WorkingState.COMPLAINT) in resp.body:
                     badAgentJID = resp.body.split(" ")[1]
                     toRestart.append(badAgentJID)
                 else:
