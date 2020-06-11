@@ -5,6 +5,7 @@ from .metadata import *
 from copy import deepcopy
 from messages import StatesMessage
 
+MAX_TIMES = 2
 
 class StateComputeRisk(State):
     
@@ -36,6 +37,7 @@ class StateComputeRisk(State):
         # waiting for all responses from agents!!!
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)     
         matesRisk = []
+        counter = 0
         while (len(waitingCoworkers)> 0 ):
             msg = await self.receive(timeout = 5)
             if msg is not None:
@@ -45,6 +47,18 @@ class StateComputeRisk(State):
                     matesRisk.append(float(msg.body))
                 else:
                     self.fAgent.saveMessage(msg)
+            else:
+                counter = counter +1
+                if (counter <= MAX_TIMES ):
+                    for co in waitingCoworkers:
+                        msg = StatesMessage(to=co, body=myRisk)
+                        msg.set_metadata("language", "float")
+                        await self.send(msg)
+                else:
+                    self.fAgent.logger.log_error(f"We did not get response from {len(waitingCoworkers)} coworkers")
+                    # we should tell about it manager
+
+                # we need to find out who did not responded!
 
         #if my risk is the smalles -> I should concede!
         if myRisk <= min(matesRisk):

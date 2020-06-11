@@ -7,6 +7,7 @@ import random
 from .metadata import *
 
 MAX_COST = 10000000
+MAX_TIMES = 3
 #    to do stop agent if there are no sequences!!!
 class StateComputeB0(State):
     def __init__(self, agent):
@@ -27,15 +28,21 @@ class StateComputeB0(State):
             costAll = self.fAgent.getCostAll(str(seq))
             if costAll == -1:
                 for cjid in coworkersJID:
+                    counter = 0
                     msg=CostMessage(to=cjid, body=seq)
                     await self.send(msg)
 
                     gotResponse = False
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)
-                        if resp is None:
-                            self.fAgent.logger.log_error("Error in B0") 
-                            # probably we should raise exception or something !!!!!!!!!!!!!
+                        if resp is None:                            
+                            counter = counter + 1
+                            if counter < MAX_TIMES:
+                                self.fAgent.logger.log_error("Error in B0, retrying") 
+                                msg=CostMessage(to=cjid, body=seq)
+                            else:
+                                self.fAgent.logger.log_error("Error in B0, we have to raise exception!!!") 
+                                # probably we should raise exception or something !!!!!!!!!!!!!
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int":
                                 costSeq = costSeq + int(resp.body)

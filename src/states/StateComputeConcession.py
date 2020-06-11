@@ -6,6 +6,8 @@ from copy import deepcopy
 import random
 from messages import *
 
+MAX_TIMES = 2
+
 def parseSets(string): # the format of the string [[[],[], ..], 'break', [[],[],...]]
     string = string.replace(" ", "")
     lists = string.split("break")
@@ -69,6 +71,7 @@ class StateComputeConcession(State):
 
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)
         matesPropositions = []
+        counter = 0
         while len(waitingCoworkers) > 0:
             msg = await self.receive(timeout = 5)
             if msg is not None:
@@ -78,6 +81,19 @@ class StateComputeConcession(State):
                     waitingCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
+            else:
+                counter = counter + 1 
+                self.fAgent.logger.log_info("we have not received and msgs from 5s")
+                if(counter < MAX_TIMES):
+                    for co in waitingCoworkers:
+                        msg = SetsMessage(to=co, body=self.fAgent.currentSigma)     # Instantiate the message
+                        msg.set_metadata("performative", "request")
+                        msg.set_metadata("language","list")
+                        msg.body = str(self.fAgent.currentSigma)
+                        await self.send(msg)
+                else:
+                    self.fAgent.logger.log_info(f"something is wrong with {len(waitingCoworkers)}")
+                    # todo tell about it to manager
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
         #en element is better at least for one agent
@@ -122,6 +138,7 @@ class StateComputeConcession(State):
 
                 received = False
                 newRisk = 0.0
+                counter = 0
                 while received == False:
                     resp = await self.receive(timeout = 5)
                     if resp is not None: 
@@ -130,6 +147,12 @@ class StateComputeConcession(State):
                             newRisk = float(resp.body)
                         else:
                             self.fAgent.saveMessage(resp)
+                    else:
+                        counter = counter + 1
+                        if counter < MAX_TIMES:
+                            await self.send(msg)
+                        else:
+                            self.fAgent.logger.log_info(f"something is wrong with {co}")
                 if newRisk > myRisk:
                     # we found something what might be concession!
                     found = True
@@ -153,17 +176,22 @@ class StateComputeConcession(State):
                 tempCost = costAllTemp
             else:
                 for co in self.fAgent.coworkers:
-                    msg=CostMessage(to=cp, body=s)
+                    msg=CostMessage(to=co, body=s)
                     msg.set_metadata("save", "False")
                     await self.send(msg)
 
                     gotResponse = False
+                    counter = 0
                     while gotResponse == False:
                         resp = await self.receive(timeout=5)
                         if resp is None:
-                            self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                            counter = counter + 1
+                            if counter < MAX_TIMES:
+                                await self.send(msg)
+                            else:
+                                self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
                         else:
-                            if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" :
+                            if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == co:
                                 tempCost = tempCost + int(resp.body)
                                 gotResponse = True
                             else:
