@@ -1,1 +1,38 @@
 \todo{opisać mechanizm recovery na który się zdecydujemy, manager kontroluje agenty, jak on padnie to ktorys z nich przejmuje zadanie}
+
+Dla systemów agentowych kluczowym zagadnieniem jest stworzenie mechanizmów naprawczych. Należy założyć, że zarówno komunikacja pomiędzy agentami, jak i agenci jako procesy mogą ulec awarii. Sytuacje takie należy przede wszystkim wykryć oraz należy, jeśli jest to możliwe, naprawić problem. 
+
+\subsection{Założenia}
+
+Dla zaproponowanej przez nas architektury rozwiązania należy zdefiniować wszystkie możliwe rodzaje awarii oraz ustalić z jakimi system będzie w stanie sobie poradzić. W rzeczywistości nie jest możliwe stworzenie mechanizmów uodparniających na wszystkie rodzaje awarii. 
+
+W przypadku wykorzystania biblioteki \texttt{SPADE} zauważone zostało, że należy wyróżnić dwa rodzaje awarii:
+\begin{enumerate}
+	\item awarię pojedynczego zachowania agenta,
+	\item awarię całego agenta.
+\end{enumerate}
+
+Postanowiliśmy, że kluczowe z punktu widzenia algorytmu są agenty \texttt{FactoryAgent}. Z tego powodu nie zostały stworzone zachowania odpornościowe dla agenta Menadżera a sam \texttt{ManagerAgent} odgrywa istotną rolę w mechanizmach odpornościowych agentów \texttt{FactoryAgent}. 
+
+Aby zrealizować mechanizmy odpornościowe zaprojektowano dwa zachowania: \texttt{ControlSubordinatesBehaviour} w \texttt{ManagerAgent} oraz \texttt{WatchdogBehaviour} w \texttt{FactoryAgent}.
+ 
+Zaimplementowano mechanizmy naprawcze dla następujących sytuacji:
+\begin{itemize}
+	\item zabite zachowania (inne niż \texttt{WatchdogBehaviour}) w \texttt{FactoryAgent}.
+	\item brak odpowiedzi na wiadomości od współpracowników.
+	\item brak odpowiedzi na wiadomość od \texttt{ManagerAgent}
+\end{itemize}
+
+Ponadto system pozwala na wykrycie awarii zachowania \texttt{ControlSubordinatesBehaviour}, czyli awarii \texttt{ManagerAgent}.
+
+\subsection{Zaimplementowane mechanizmy}
+Zadaniem \texttt{ControlSubordinatesBehaviour} jest monitorowanie działania poszczególnych agentów \texttt{FactoryAgent}. Jest to zachowanie cykliczne, które z określoną częstotliwością wysyła wiadomość typu \texttt{WatchdogMessage} do zachowań \texttt{WatchdogBehaviour} wszystkich podwładnych agentów. Zachowanie to oczekuje na odpowiedź z \texttt{WorkingState}. 
+
+Enum \texttt{WorkingState} ma zdefiniowane trzy wartości: OK, RESTARTING oraz COMPLAINT. Pierwsze dwie wysyłane są do Managera w odpowiedzi na \texttt{WatchdogMessage}, ostatnie wysyłane jest przez pozostałych agentów, jeśli nie będą oni w stanie skontaktować się z współpracownikami.
+
+\subsection{Wyniki testowania dla mechanizmów dla agentów}
+
+\subsection{Wyniki testowania dla mechanizmów dla zachowań}
+
+
+
