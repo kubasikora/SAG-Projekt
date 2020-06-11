@@ -30,7 +30,7 @@ class StateWaitForProposals(State):
         toRemove = []
         proposals = dict()
         for msg in self.fAgent.mailboxForLater:
-            if msg.metadata["performative"] == "propose" and msg.metadata["language"] == "list" :
+            if msg.metadata["performative"] == "propose" and msg.metadata["language"] == "list" and str(msg.sender) in waitingActiveCoworkers:
                 #print(msg.sender)
                 toRemove.append(msg)
                 sender = str(msg.sender)
