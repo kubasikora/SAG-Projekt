@@ -100,9 +100,11 @@ class ManagerAgent(Agent):
         self.workers = []
 
     def findWorker(self, jid):
+        i = 0
         for worker in self.workers:
             if worker.Myjid == jid:
-                return worker
+                return worker, i
+            i = i + 1
 
     async def setup(self):
 

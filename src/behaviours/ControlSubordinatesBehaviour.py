@@ -3,6 +3,7 @@ from spade.message import Message
 from behaviours.WatchdogBehaviour import WorkingState
 from messages import WatchdogMessage
 from math import floor
+from agents import FactoryAgent
 
 PERIOD = 10
 
@@ -20,7 +21,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
     def checkResponses(self, responded):
         toRestart = []
         for sub in self.subordinates.keys():
-            if sub not in responded or self.subordinates[sub] > 1:
+            if sub not in responded and self.subordinates[sub] > 2:
                 toRestart.append(sub)
                 self.subordinates[sub] = 0
         return toRestart
@@ -50,10 +51,19 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
                     self.subordinates[str(resp.sender)] = 0
         toRestart = self.checkResponses(currentWorking)
         for jid in toRestart:
-            worker = self.manager.findWorker(jid)
-            #if worker is not None:
-                #await worker.stop()
-                #await worker.start()
+            worker, i = self.manager.findWorker(jid)
+            await worker.stopAllBehaviours()
+            p = self.manager.workersParams[i]
+            self.agent.logger.log_info(f"Adding {jid} to the team")
+            created = FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost")
+            self.manager.workers[i] = created
+            await created.start()
+            created.web.start(hostname="localhost", port="10000")
+            self.agent.logger.log_info(f"DeputeBehaviour for {jid} created")
+            msg = StatesMessage(to=jid, body=self.manager.task)
+            msg.set_metadata("performative", "request")     # Instantiate the message
+            await self.send(msg)
+            self.agent.logger.log_info(f"Task sent to {jid}")
 
         
                 

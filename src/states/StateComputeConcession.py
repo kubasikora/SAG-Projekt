@@ -78,7 +78,10 @@ class StateComputeConcession(State):
                 if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "list" :
                     sender = str(msg.sender)
                     matesPropositions.append(parseSets(msg.body))
-                    waitingCoworkers.remove(sender)
+                    try:
+                        waitingCoworkers.remove(sender)
+                    except:
+                        self.fAgent.logger.log_info(f"got two responses from {sender}")
                 else:
                     self.fAgent.saveMessage(msg)
             else:

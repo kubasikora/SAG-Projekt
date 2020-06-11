@@ -4,6 +4,7 @@ from spade.template import Template
 from messages import *
 from behaviours import *
 from Logger import Logger
+import asyncio
 
 PERIOD = 10
 
@@ -48,6 +49,12 @@ class FactoryAgent(Agent):
             return "b"
         else:
             return "c"
+
+    async def stopAllBehaviours(self):
+        for b in self.behaviours:
+            b.kill()
+        await self.stop()
+
 
     def computeCost(self, sequence):
         cost = len(sequence) * self.pricePerEl
