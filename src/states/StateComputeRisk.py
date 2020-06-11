@@ -56,6 +56,9 @@ class StateComputeRisk(State):
                         await self.send(msg)
                 else:
                     self.fAgent.logger.log_error(f"We did not get response from {len(waitingCoworkers)} coworkers")
+                    for c in waitingCoworkers:
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+c)
+                        await self.send(alarmMsg)
                     # we should tell about it manager
 
                 # we need to find out who did not responded!

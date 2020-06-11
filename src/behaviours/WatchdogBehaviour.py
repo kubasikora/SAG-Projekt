@@ -9,6 +9,7 @@ PERIOD = 10
 class WorkingState(Enum):
     OK = 1
     RESTARTING = 2
+    COMPLAIN = 3 
 
 class WatchdogBehaviour(PeriodicBehaviour):
     def __init__(self, agent, period, startTime):

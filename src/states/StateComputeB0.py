@@ -5,6 +5,8 @@ from spade.message import Message
 from messages import CostMessage
 import random
 from .metadata import *
+from behaviours import WorkingState
+
 
 MAX_COST = 10000000
 MAX_TIMES = 3
@@ -39,9 +41,11 @@ class StateComputeB0(State):
                             counter = counter + 1
                             if counter < MAX_TIMES:
                                 self.fAgent.logger.log_error("Error in B0, retrying") 
-                                msg=CostMessage(to=cjid, body=seq)
+                                await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error in B0, we have to raise exception!!!") 
+                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+cjid)
+                                await self.send(alarmMsg)
                                 # probably we should raise exception or something !!!!!!!!!!!!!
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == cjid:

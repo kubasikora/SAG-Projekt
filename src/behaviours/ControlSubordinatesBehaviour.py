@@ -18,13 +18,12 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
         for sub in self.subordinates.keys():
             self.subordinates[sub] = 0 # if the bahaviour was restarted
 
-    def checkResponses(self, responded):
-        toRestart = []
+    def checkResponses(self, responded, toRestart):
         for sub in self.subordinates.keys():
             if sub not in responded and self.subordinates[sub] > 2:
-                toRestart.append(sub)
+                if(sub not in toRestart):
+                    toRestart.append(sub)
                 self.subordinates[sub] = 0
-        return toRestart
     
     async def run(self):
         #send messages to subordinates and wait to get response from each of them 
@@ -34,6 +33,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             await self.send(msg)
 
         currentWorking = []
+        toRestart = []
         timeout = floor(float(PERIOD) / len(self.subordinates)) - 1 
         if timeout < 1:
             timeout = timeout + 1
@@ -43,13 +43,17 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
                 self.manager.logger.log_warning("No response!")
             else:
                 self.manager.logger.log_warning("Ping responded!")
-                currentWorking.append(str(resp.sender))
-                if resp.body == str(WorkingState.RESTARTING):
-                    self.subordinates[str(resp.sender)] = self.subordinates[str(resp.sender)] + 1
-                    self.manager.logger.log_warning(f"Restarting {resp.sender}")
+                if str(WorkingState.COMPLAIN) in resp.body:
+                    badAgentJID = resp.body.split(" ")[1]
+                    toRestart.append(badAgentJID)
                 else:
-                    self.subordinates[str(resp.sender)] = 0
-        toRestart = self.checkResponses(currentWorking)
+                    currentWorking.append(str(resp.sender))
+                    if resp.body == str(WorkingState.RESTARTING):
+                        self.subordinates[str(resp.sender)] = self.subordinates[str(resp.sender)] + 1
+                        self.manager.logger.log_warning(f"Restarting {resp.sender}")
+                    else:
+                        self.subordinates[str(resp.sender)] = 0
+        self.checkResponses(currentWorking, toRestart)
         for jid in toRestart:
             worker, i = self.manager.findWorker(jid)
             await worker.stopAllBehaviours()

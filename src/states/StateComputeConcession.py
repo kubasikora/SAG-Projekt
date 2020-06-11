@@ -5,6 +5,7 @@ from .metadata import *
 from copy import deepcopy
 import random
 from messages import *
+from behaviours import WorkingState
 
 MAX_TIMES = 2
 
@@ -96,7 +97,9 @@ class StateComputeConcession(State):
                         await self.send(msg)
                 else:
                     self.fAgent.logger.log_info(f"something is wrong with {len(waitingCoworkers)}")
-                    # todo tell about it to manager
+                    for c in waitingCoworkers:
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+c)
+                        await self.send(alarmMsg)
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
         #en element is better at least for one agent
@@ -155,7 +158,9 @@ class StateComputeConcession(State):
                         if counter < MAX_TIMES:
                             await self.send(msg)
                         else:
-                            self.fAgent.logger.log_info(f"something is wrong with {co}")
+                            self.fAgent.logger.log_error(f"something is wrong with {co}")
+                            alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+co)
+                            await self.send(alarmMsg)
                 if newRisk > myRisk:
                     # we found something what might be concession!
                     found = True
@@ -193,6 +198,8 @@ class StateComputeConcession(State):
                                 await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+co)
+                                await self.send(alarmMsg)
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == co:
                                 tempCost = tempCost + int(resp.body)
