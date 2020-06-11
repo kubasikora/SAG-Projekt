@@ -4,6 +4,7 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 from behaviours import WorkingState
+from messages import StatesMessage
 
 MAX_TIME = 5 # 5 min is the max time of waiting for all other guys
 
@@ -58,7 +59,7 @@ class StateWaitForProposals(State):
                         await self.send(retry)
                 else:
                     for c in waitingActiveCoworkers:
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+c)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
                         await self.send(alarmMsg)
         #print("I got all proposals "+self.fAgent.nameMy)
         for (mate, seq) in proposals.items():

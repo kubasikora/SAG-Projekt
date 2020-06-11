@@ -98,7 +98,7 @@ class StateComputeConcession(State):
                 else:
                     self.fAgent.logger.log_info(f"something is wrong with {len(waitingCoworkers)}")
                     for c in waitingCoworkers:
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+c)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
                         await self.send(alarmMsg)
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
@@ -159,7 +159,7 @@ class StateComputeConcession(State):
                             await self.send(msg)
                         else:
                             self.fAgent.logger.log_error(f"something is wrong with {co}")
-                            alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+co)
+                            alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
                             await self.send(alarmMsg)
                 if newRisk > myRisk:
                     # we found something what might be concession!
@@ -198,7 +198,7 @@ class StateComputeConcession(State):
                                 await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAIN)+""+co)
+                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
                                 await self.send(alarmMsg)
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == co:
