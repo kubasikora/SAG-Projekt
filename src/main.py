@@ -3,23 +3,136 @@ from Cars import *
 from Logger import Logger
 import time, sys, os
 from spade.agent import Agent
+import json
 
+
+def getCooworkers(agents_jid, current_agent_index):
+    index = 0
+    cooworkers = []
+    for agent_jid in agents_jid:
+        if(index != current_agent_index):
+            cooworkers.append(agent_jid)
+
+        index = index + 1
+
+    return cooworkers
+
+def generate_agents_manager(data, order_dict):
+    agent_number = data[test_case_order_dict]["agent_number"]
+    number_of_cars, cars = init_cars(agent_number)
+    
+    order_dict = {}
+    for i in range(0, number_of_cars):
+        order_dict[i] = data[test_case_order_dict]["car_types"][i]
+
+    agents = []
+    agents_name = []
+    index = 0
+    
+    agents_jid = []
+    for agent in data["agents"]:
+        if(index >= agent_number):
+            break
+        agents_jid.append(agent["jid"])
+
+    index = 0
+    for agent in data["agents"]:
+        
+        if(index >= agent_number):
+            break
+
+        agent_dict = {}
+        agent_dict = agent
+        agent_dict["sameIndex"] = getSameIndexes(cars, agent_number, index)
+        agent_dict["coworkers"] = getCooworkers(agents_jid, index)
+
+        agents.append(agent_dict)
+        index = index + 1
+
+    manager_name = data["maganer"]["jid"]
+    manager_password = data["maganer"]["password"]
+
+    managerAgent = ManagerAgent(manager_name, manager_password, agents, order_dict)
+    return managerAgent
 
 if __name__ == "__main__":
     logger = Logger("main")
     logger.log_info("Start")
-    dictTest={0:0, 1:0, 2:0, 3:4, 4:0, 5:7, 6:7, 7:8, 8:0, 9:0 , 10:0, 11:0, 12:0, 13:0, 14:0, 15:0, 16:9, 17:5, 18:0, 19:0, 20:1, 21:9, 22:3, 23:0, 24:0, 25:6, 26:0}
 
-    #to do create in cars (or somewhere else) params form more than 3 agents -> the rest of algorith should stay the same (remember to create jid's in prosodyctl)
-    painterPar={"jid": "paintera@localhost", "password": "12345678", "name":"PainterA" , "priceEle":5 , "priceChan":5, "sameIndex":getSameIndexesColors() , "coworkers": ["assemblya@localhost", "weldera@localhost"]}
-    welderPar={"jid":"weldera@localhost" , "password": "12345678", "name":"WelderA" , "priceEle":5, "priceChan": 5,"sameIndex":getSameIndexesBody() , "coworkers": ["assemblya@localhost", "paintera@localhost"]}
-    assemblyPar={"jid": "assemblya@localhost", "password": "12345678", "name": "AssemblyA", "priceEle":5, "priceChan": 5,"sameIndex":getSameIndexesEngine() , "coworkers":["weldera@localhost", "paintera@localhost"] }
+    with open("config/agents.config.json", "r") as read_file:
+        data = json.load(read_file)
+        
+    
+    if len(sys.argv) <= 1:
+        print("No test case selected")
+    else:
+        test_case = int(sys.argv[1])
 
-    params = [painterPar,welderPar, assemblyPar ]
+        if test_case == 0:
+            print("Test case: 3 agents are working")
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
 
-    managerAgent = ManagerAgent("manager@localhost", "12345678",params, dictTest)
-    managerAgent.start()
-    managerAgent.web.start(hostname="localhost", port="10001")
+        elif test_case == 1:
+            print("Test case: 7 agents are working")
+            '''
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
+            '''
+
+            os._exit(0) 
+            
+        elif test_case == 2:
+            print("Test case: 7 agents are working, killing one random agent")
+            '''
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
+            '''
+            
+            os._exit(0) 
+
+        elif test_case == 3:
+            print("Test case: 15 agents are working, killing random number of agents")
+            '''
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
+            '''
+
+            os._exit(0) 
+
+        elif test_case == 4:
+            print("Test case: 15 agents are working, killing all agents")
+            '''
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
+            '''
+
+            os._exit(0)  
+
+        elif test_case == 5:
+            print("Test case: 15 agents are working, killing random behaviour of random agent")
+            '''
+            test_case_order_dict = "order1"
+            managerAgent = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
+            '''
+
+            os._exit(0)  
+
+        else:
+            print("Wrong number")
+            os._exit(0) 
 
     while True:
         try:
@@ -31,4 +144,4 @@ if __name__ == "__main__":
             break
 
     logger.log_info("Agents finished")
-    os._exit(0)
+    os._exit(0) 
