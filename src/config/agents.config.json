@@ -1,0 +1,121 @@
+{
+    "order1" : {
+        "agent_number": 3, 
+        "car_types": [0, 0, 0, 4, 0, 7, 7, 8, 0, 0 , 0, 0, 0, 0, 0, 0, 9, 5, 0, 0, 1, 9, 3, 0, 0, 6, 0]
+    },
+
+
+    "agents": [
+         {
+        "jid" : "agenta@localhost",
+        "password" : "12345678",
+        "name":"AgentA",
+        "priceEle": 5,
+        "priceChan": 5
+        },
+         {
+            "jid" : "agentb@localhost",
+            "password" : "12345678",
+            "name":"AgentB",
+            "priceEle": 5,
+            "priceChan": 5
+            },
+        {
+        "jid" : "agentc@localhost",
+        "password" : "12345678",
+        "name":"AgentC",
+        "priceEle": 5,
+        "priceChan": 5
+        },
+        {
+            "jid" : "agentd@localhost",
+            "password" : "12345678",
+            "name":"AgentD",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agente@localhost",
+            "password" : "12345678",
+            "name":"AgentE",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+         {
+            "jid" : "agentf@localhost",
+            "password" : "12345678",
+            "name":"AgentF",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentg@localhost",
+            "password" : "12345678",
+            "name":"AgentG",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+
+         {
+            "jid" : "agenth@localhost",
+            "password" : "12345678",
+            "name":"AgentH",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+         {
+            "jid" : "agenti@localhost",
+            "password" : "12345678",
+            "name":"agentI",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentj@localhost",
+            "password" : "12345678",
+            "name":"agentJ",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentk@localhost",
+            "password" : "12345678",
+            "name":"AgentK",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentl@localhost",
+            "password" : "12345678",
+            "name":"AgentL",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentm@localhost",
+            "password" : "12345678",
+            "name":"agentM",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agentn@localhost",
+            "password" : "12345678",
+            "name":"AgentN",
+            "priceEle": 5,
+            "priceChan": 5
+        },
+        {
+            "jid" : "agento@localhost",
+            "password" : "12345678",
+            "name":"AgentO",
+            "priceEle": 5,
+            "priceChan": 5
+        }
+    ],
+    "maganer" : {
+        "jid" : "manager@localhost",
+        "password" : "12345678"
+    }
+
+}
