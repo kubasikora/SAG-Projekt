@@ -12,6 +12,15 @@ class StateWaitForNextRound(State):
         super().__init__()
         self.fAgent = agent
 
+
+    def clearMailBox(self):
+        toRemove = []
+        for msg in self.fAgent.mailboxForLater:
+            if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "boolean":
+                toRemove.append(msg)
+        for msg in toRemove:
+            self.fAgent.mailboxForLater.remove(msg)
+
     async def run(self):
         self.fAgent.logger.log_info("Waiting for coworkers")
         # in this state we need to check if all coworkers are active and ready to start the next round
@@ -29,7 +38,7 @@ class StateWaitForNextRound(State):
         #firstly we should check saved messages
         msgToRemove = []
         for msg in self.fAgent.mailboxForLater:
-            if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "boolean" :
+            if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "boolean" and str(msg.sender) in waitingCoworkers:
                 msgToRemove.append(msg)
                 waitingCoworkers.remove(str(msg.sender))
                 if msg.body == "False":
@@ -40,12 +49,12 @@ class StateWaitForNextRound(State):
             resp = await self.receive(timeout=10)
             if resp is not None:
                 sender = str(resp.sender)
-                if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "boolean" :
+                if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "boolean" and str(resp.sender) in waitingCoworkers:
                     waitingCoworkers.remove(sender)
                     if resp.body == "False":
                         self.fAgent.activeCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
-        
+        self.clearMailBox()
         self.set_next_state(STATE_PROPOSE)
 
