@@ -17,74 +17,56 @@ class Body(Enum):
     ESTATE = 2
     HATCHBACK = 3
 
-class TypeA(Enum):
-    TYPEA_1 = 1
-    TYPEA_2 = 2
-    TYPEA_3 = 3
 
-class TypeB(Enum):
-    TYPEB_1 = 1
-    TYPEB_2 = 2
-    TYPEB_3 = 3
-
-class TypeC(Enum):
-    TYPEC_1 = 1
-    TYPEC_2 = 2
-    TYPEC_3 = 3  
 
 class Car:
     def __init__(self):
         self.features = []
+
     def setFeature(self, i, value):
         self.features[i] = value
+
     def getFeature(self, i):
         return self.features[i]
+
     def __repr__(self):
         string = ''
         for feature in self.features:
             string = string + str(feature) + ' '
         return string
     
-cars = []
+class Cars:
+    def __init__(self, features_number):
+        self.cars = []
+        self.agents_number = features_number
+        self.features = [Color, Engine, Body]
+        self.init_cars()
 
-def init_cars(agents_number):
+    def init_cars(self):
 
-    features = [Color, Engine, Body, TypeA, TypeB, TypeC]
+        if self.agents_number > len(self.features):
+            print("Not enough car features")
+        else:
+            self.features = self.features[:self.agents_number]
+            self.cars = list(itertools.product(*self.features))
 
-    if agents_number > len(features):
-        '''
-
-        '''
-        print("Not enough car features")
-        return
-    else:
-        '''
         
-        '''
-        features = features[:agents_number]
+    def get_cars_amount(self):
+        return len(self.cars)
 
-    cars = list(itertools.product(*features))
+    def get_cars(self):
+        return self.cars
 
-    return len(cars), cars
+    def get_same_indexes(self, i):
+        lists = [[],[],[]]
 
-def getCars():
-    return cars
+        index = 0
+        for feature in self.features[i]:
+            for j in range(0, len(self.cars)):
+                if(self.cars[j][i] == feature):
+                    lists[index].append(j)
 
-def getSameIndexes(cars, agentNumber, i):
-    features = [Color, Engine, Body]
-    features = features[:agentNumber]
-    lists = [[],[],[]]
-    index = 0
- 
-    index = 0
-    for feature in features[i]:
-        for j in range(0, len(cars)):
-            if(cars[j][i] == feature):
-                #print(str(feature) + " " + str(cars[j]) + " " + str(j))
-                lists[index].append(j)
+            index = index + 1
 
-        index = index + 1
-
-    #print(lists)
-    return [lists[0], lists[1], lists[2]]
+        return [lists[0], lists[1], lists[2]]
 

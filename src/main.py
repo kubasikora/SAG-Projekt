@@ -6,7 +6,7 @@ from spade.agent import Agent
 import json
 
 
-def getCooworkers(agents_jid, current_agent_index):
+def get_cooworkers(agents_jid, current_agent_index):
     index = 0
     cooworkers = []
     for agent_jid in agents_jid:
@@ -19,7 +19,8 @@ def getCooworkers(agents_jid, current_agent_index):
 
 def generate_agents_manager(data, order_dict):
     agent_number = data[test_case_order_dict]["agent_number"]
-    number_of_cars, cars = init_cars(agent_number)
+    car_manager = Cars(agent_number)
+    number_of_cars = car_manager.get_cars_amount()
     
     order_dict = {}
     for i in range(0, number_of_cars):
@@ -34,6 +35,7 @@ def generate_agents_manager(data, order_dict):
         if(index >= agent_number):
             break
         agents_jid.append(agent["jid"])
+        index = index+1
 
     index = 0
     for agent in data["agents"]:
@@ -43,8 +45,8 @@ def generate_agents_manager(data, order_dict):
 
         agent_dict = {}
         agent_dict = agent
-        agent_dict["sameIndex"] = getSameIndexes(cars, agent_number, index)
-        agent_dict["coworkers"] = getCooworkers(agents_jid, index)
+        agent_dict["sameIndex"] = car_manager.get_same_indexes(index)
+        agent_dict["coworkers"] = get_cooworkers(agents_jid, index)
 
         agents.append(agent_dict)
         index = index + 1
