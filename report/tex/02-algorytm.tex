@@ -2,6 +2,39 @@ Przedstawiony algorytm negocjacji został zaczerpnięty z~pracy \emph{Production
 
 Pomysł zamiany problemu na zadanie negocjacji opiera się na założeniu, że fabrykę można podzielić na kilka komórek. Z~każdą komórką związana jest funkcja kosztu, która opisuje pewien koszt wytworzenia elementu. Koszt produkcji związany jest z~zarówno wykonaniem samego elementu, jak i~zależy od wcześniej wykonywanego elementu. Przykładowo, stacja lakiernicza, która ostatnio pracowała z~czerwonym lakierem, w~celu wykonania zielonego elementu, musi zmienić lakier, wyczyścić dysze oraz wykonać szereg innych prac, z~którymi można utożsamić pewien koszt.
 
+\subsection{Analiza z poziomu teorii gier}
+W~celu sformalizowania zadania, wprowadzone zostało kilka definicji. W~pierwszej kolejności autorzy~\cite{wooldridge1996production} wprowadzają pojęcie domeny sekwencji opisanej jako strukturę
+\begin{center}
+    $ \big \langle P, O, S, A_{g}, f \big \rangle$
+\end{center}
+gdzie 
+\begin{itemize}
+    \item $P$ to zbiór możliwych produktów,
+    \item $O$ to zbiór zamówień złożony z~produktów z~$P$,
+    \item $S$ to sekwencja produktów $P$,
+    \item $A_{g} = \{1, \dots, l\}$ to zbiór agentów (komórek produkcji),
+    \item $f = \{c_{i}\}$ jest zbiorem funkcji kosztu, reprezentującym fabrykę, każdemu agentowi $i \in A_{g}$ odpowiada funkcja kosztu $c_{i}$
+\end{itemize}
+
+Mając zdefiniowaną dziedzinę, można przejść do formalnego opisania problemu. Dla zamówienia $o \in O$ poszukujemy takiej sekwencji $\sigma \in S$, która realizuje $o$ (autorzy proponują zapis $\sigma \in sat(o)$)~\cite{rosenschein1994rules}.
+
+Dla każdej sekwencji $\sigma$, każdy agent $i \in A_{g}$ jest w~stanie obliczyć swoją użyteczność $util(\sigma)$, która jest zdefiniowana jako różnica pomiędzy kosztem najgorszej możliwej sekwencji a~kosztem podanej. 
+
+Następnie autorzy próbują wprowadzić relację dominacji w~dziedzinie sekwencji, w~odniesieniu do danego zamówienia. Dla dwóch różnych sekwencji $\sigma$ oraz $\sigma'$:
+\begin{itemize}
+    \item $\sigma$ słabo dominuje nad $\sigma'$ z~punktu widzenia $g \subseteq A_{g}$, jeżeli dla każdego agenta $i~\in~g, util_{i}(\sigma)~\geq~util_{i}(\sigma')$, czyli innymi słowy, każdy agent z~$g$~radzi sobie co najmniej tak samo dobrze przy sekwencji~$\sigma$, jak przy sekwencji~$\sigma'$. 
+
+    \item $\sigma$ dominuje nad $\sigma'$ z~punktu widzenia $g \subseteq A_{g}$, jeżeli $\sigma$ słabo dominuje nad $\sigma'$  oraz istnieje taki agent $j$ dla którego $util_{i}(\sigma)~>~util_{i}(\sigma')$, czyli innymi słowy, każdy agent z~$g$~radzi sobie co najmniej tak samo dobrze przy sekwencji~$\sigma$, jak przy sekwencji~$\sigma'$ oraz co najmniej jeden agent radzi sobie lepiej przy sekwencji $\sigma$ niż przy sekwencji $\sigma'$. 
+\end{itemize}
+
+Ostatecznie, mając cały aparat matematyczny, możemy zdefiniować pareto-optymalność~\cite{luce1958games}. Dla zadanego zamówienia $o$, sekwencja $\sigma$ jest pareto-optymalna jeżeli nie ma żadnej innej sekwencji $\sigma'$, która nad nią dominuje.
+
+\textbf{Sekwencja globalnie optymalna, będzie pareto-optymalna dla jednego z~agentów w systemie}. Możemy wykorzystać ten fakt do określenia zbioru negocjacyjnego $NS$ czyli zbioru sensownego do proponowania. $NS^{o}$ jest zbiorem sekwencji pareto-optymalnych dla zadania $o$. 
+
+\textbf{Nierozsądnym było by, aby agent $i$ proponował sekwencję, która nie jest dla niego pareto-optymalna.} Dzięki zauważeniu tej zależności, możemy ograniczyć przeszukiwaną dziedzinę do rozwiązań pareto-optymalnych dla któregoś z~agentów. Każdy z~agentów może samodzielnie określić swój zbiór $NS$ w~sposób niezależny od innych, co umożliwia zrównoleglenie obliczeń.
+
+
+\subsection{Algorytm agentowy}
 W~systemie agentowym, negocjacja sekwencji polega na rozmowie pomiędzy agentami, reprezentującymi poszczególne komórki fabryki, podczas której każdy z~agentów próbuje zmaksymalizować swoją funkcję użyteczności, czyli \emph{de facto} zminimalizować swój koszt. Koszt związany z~samą produkcją jest stały dla każdej zadanej sekwencji, dlatego też minimalizowany będzie koszt zmian typu produktu.
 
 Podejście agentowe ma wiele zalet. W~pierwszej kolejności, takie rozwiązanie jest modularne, co pozwala na łatwe rozszerzanie, dołączanie i~wyłączanie komponentów. Rozbicie problemu na podproblemy, pozwala znacząco uprościć problem optymalizacji oraz potencjalnie przyspieszyć proces szukania rozwiązania, poprzez zrównoleglenie obliczeń.
@@ -13,7 +46,7 @@ Podejście agentowe ma wiele zalet. W~pierwszej kolejności, takie rozwiązanie 
     \label{fig:abstract-negotiation-fsm}
 \end{figure}
 
-Na rysunku~\ref{fig:abstract-negotiation-fsm} przedstawiony został ogólny schemat algorytmu negocjacji. W~stanie $s_{0}$ dokonywana jest inicjalizacja algorytmu. W~każdym agencie, ustawiany jest licznik rund $t$ na wartość początkową równą $1$ oraz zbiór propozycji przedstawionych $T_{i}$ jako zbiór pusty. Następnie, każdy z~agentów ustawiany jest w~stan \textit{Active} oraz przeliczany jest zbiór $b_{p_{i}}$. Ostatnim krokiem jest niedeterministyczny wybór pierwszej propozycji $\sigma$.
+Na rysunku~\ref{fig:abstract-negotiation-fsm} przedstawiony został ogólny schemat algorytmu negocjacji. W~stanie $s_{0}$ dokonywana jest inicjalizacja algorytmu. W~każdym agencie, ustawiany jest licznik rund $t$ na wartość początkową równą $1$ oraz zbiór propozycji przedstawionych $T_{i}$ jako zbiór pusty. Następnie, każdy z~agentów ustawiany jest w~stan \textit{Active} oraz przeliczany jest zbiór $b_{p_{0}}$, który jest zbiorem wszystkich sekwencji pareto-optymalnych. Ostatnim krokiem jest niedeterministyczny wybór pierwszej propozycji $\sigma$.
 
 Po inicjalizacji, algorytm przechodzi w~stan $s_{1}$, w~którym każdy aktywny agent wykłada na stół swoją propozycję $\sigma$, równocześnie dołączając ją do swojego zbioru propozycji przedstawionych $T_{i}$. Następnie, agenci rozmawiając ze sobą szukają takiej propozycji, która odpowiada wszystkim aktywnym agentom. Jeżeli taka propozycja zostanie znaleziona, następuje przejście do stanu terminalnego $s_{2}$. W~przeciwnym przypadku, należy znaleźć agenta, który powinien odpuścić w~danej rundzie negocjacji. Aby znaleźć takiego agenta, negocjacje przechodzą do stanu $s_{3}$.
 
