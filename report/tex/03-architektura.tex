@@ -50,5 +50,46 @@ Każdy agent składa się z~kilku zachowań działających współbieżnie. Zach
 Z~każdym zachowaniem, skojarzony jest szablon wiadomości. W~momencie przyjścia wiadomości, dla każdego zachowania, agent sprawdza czy wiadomość jest zgodna z~szablonem. Jeżeli wiadomość i~szablon, są ze sobą zgodne, to agent umieszcza wiadomość w~skrzynce odbiorczej danego zachowania, z~którego może ona zostać pobrana. 
 
 \todo{Tu opisać zachowania menedżera}
+Agent zarządczy \texttt{Manager Agent} składa się z~trzech zachowań, w~ramach których tworzone i~zarządzane są pozostałe agenty. Dekompozycja na poszczególne zachowania został przedstawiony na rysunku~\ref{fig:manager-behaviours}.
+
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/SAG-Agents.pdf}
+    \caption{Podział agenta \texttt{Manager Agent} na zachowania}
+    \label{fig:manager-behaviours}
+\end{figure}
+
+Pierwszym zachowaniem jest \texttt{Depute}, którego rolą jest jednorazowe stworzenie wszystkich agentów oraz wysłanie im zadania, przedstawionego jako lista wszystkich końcowych produktów, wraz z~ich zadaną licznością.
+
+\todo{pozostałe zachowania, zrobić rysunek}
 
 \todo{Tu opisać zachowania fabryki}
+Agent typu \texttt{Factory Agent} składa się z~czterech, oddzielnych zachowań, które realizują różne funkcje w~systemie. Podział na zachowania został przedstawiony na rysunku~\ref{fig:factory-behaviours}.
+
+\begin{figure}[h]
+    \centering
+    % \includegraphics[width=\columnwidth]{figures/SAG-Agents.pdf}
+    \caption{Podział agenta \texttt{Factory Agent} na zachowania}
+    \label{fig:factory-behaviours}
+\end{figure}
+
+\todo{zrobić rysunek}
+
+Najważniejszym zachowaniem w~systemie jest zachowanie \texttt{NegotiateFSM}, które realizuje algorytm negocjacji pomiędzy agentami. Same negocjacje zostały zaimplementowane jako skończona maszyna stanów, która została przedstawiona na rysunku~\ref{fig:factory-fsm}.
+
+\todo{dodać funkcje przejścia i zrobić literki większe~\ref{fig:factory-fsm}}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/SAG-FactoryFSM.pdf}
+    \caption{Maszyna stanów na której bazuje zachowanie \texttt{FSMBehaviour}}
+    \label{fig:factory-fsm}
+\end{figure}
+
+Pozostałe zachowania są konieczne aby dany agent był w~stanie zbudować bazę wiedzy na temat możliwości pozostałych agentów.
+
+Zachowanie \texttt{ComputeAgentsCost} pozwala na uzyskanie informacji, jak bardzo dobra dla danego agenta jest podana sekwencja.
+Agenci odpytują się nawzajem, tak aby móc zaproponować rozwiązanie dobre dla wszystkich agentów w~systemie. 
+
+Kolejnym zachowanie jest \texttt{ComputeBetterOrEqual}, które  umożliwia agentom uzyskać informację na temat zbioru znanych przez agenta rozwiązań problemu, których koszt jest mniejszy lub równy od podanego. Innymi słowami, pozwala na otrzymanie wszystkich rozwiązań które są lepsze lub co najmniej tak dobre jak podane.
+
+Ostatnim zachowaniem jest \texttt{ComputeRisk} jest wykorzystywane przy szukaniu kompromisu. Agenci odpytują się nawzajem, przy użyciu tego zachowania, aby znaleźć agenta który ma \textit{najmniej} do stracenia, czyli tego którego wzrost kosztu przy odpuszczeniu będzie najmniejszy.
