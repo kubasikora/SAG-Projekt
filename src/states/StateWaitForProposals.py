@@ -23,6 +23,13 @@ class StateWaitForProposals(State):
     def __init__(self, agent):
         super().__init__()
         self.fAgent = agent
+    def clearMailboxForLater(self):
+        toRemove = []
+        for msg in self.fAgent.mailboxForLater:
+            if msg.metadata["performative"] == "propose" and msg.metadata["language"] == "list":
+                toRemove.append(msg)
+        for msg in toRemove:
+            self.fAgent.mailboxForLater.remove(msg)
 
     async def run(self):
         waitingActiveCoworkers = deepcopy(self.fAgent.activeCoworkers)
@@ -39,6 +46,7 @@ class StateWaitForProposals(State):
         for msg in toRemove:
             self.fAgent.mailboxForLater.remove(msg)
         counter = 0
+        self.clearMailboxForLater()
         while(len(waitingActiveCoworkers)>0):
             msg = await self.receive(timeout = 60)
             if msg is not None:

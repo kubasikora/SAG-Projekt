@@ -120,7 +120,7 @@ class ManagerAgent(Agent):
         self.add_behaviour(self.waitForOptimalSequence, receiver_template) 
         
         watchdog_template = WatchdogMessage.template(self.MyJid)
-        self.agentControler = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=3), workersJid)
+        self.agentControler = ControlSubordinatesBehaviour(self, PERIOD, datetime.datetime.now() + datetime.timedelta(seconds=5), workersJid)
         self.add_behaviour(self.agentControler, watchdog_template)
 
         monitor_template = InactiveMessage.template(self.MyJid)

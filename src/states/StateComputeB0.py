@@ -2,7 +2,7 @@ from spade.message import Message
 from spade.behaviour import State
 from agents import FactoryAgent
 from spade.message import Message
-from messages import CostMessage
+from messages import CostMessage, WatchdogMessage
 import random
 from .metadata import *
 from behaviours import WorkingState
@@ -36,11 +36,11 @@ class StateComputeB0(State):
 
                     gotResponse = False
                     while gotResponse == False:
-                        resp = await self.receive(timeout=5)
+                        resp = await self.receive(timeout=10)
                         if resp is None:                            
                             counter = counter + 1
                             if counter < MAX_TIMES:
-                                self.fAgent.logger.log_error("Error in B0, retrying") 
+                                self.fAgent.logger.log_error(f"Error in B0, retrying {cjid}") 
                                 await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error in B0, we have to raise exception!!!") 

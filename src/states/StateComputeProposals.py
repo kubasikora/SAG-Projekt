@@ -23,16 +23,24 @@ class StateComputeProposals(State):
             else:
                 myDisagree[co] = proposition
 
+    def clearFinalResultsInSaved(self):
+        toRemove = []
+        for msg in self.fAgent.mailboxForLater:
+            if msg.metadata["performative"] == "confirm" or msg.metadata["performative"] == "disconfirm":
+                toRemove.append(msg)
+        for msg in toRemove:
+            self.fAgent.mailboxForLater.remove(msg)
+
 
     def checkFinalResultInSaved(self, waitingCoworkers , agreementFound):
       
         toRemove = []
         for msg in self.fAgent.mailboxForLater:
-            if msg.metadata["performative"] == "confirm":
+            if msg.metadata["performative"] == "confirm" and str(msg.sender) in waitingCoworkers:
                 agreementFound = True
                 toRemove.append(msg)
                 waitingCoworkers.remove(str(msg.sender))
-            elif msg.metadata["performative"] == "disconfirm":
+            elif msg.metadata["performative"] == "disconfirm" and str(msg.sender) in waitingCoworkers:
                 toRemove.append(msg)
                 waitingCoworkers.remove(str(msg.sender))
         for msg in toRemove:
@@ -115,6 +123,8 @@ class StateComputeProposals(State):
                     waitingCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
+
+        self.clearFinalResultsInSaved()
 
         if agreementFound == True:
             self.fAgent.logger.log_success("The end")
