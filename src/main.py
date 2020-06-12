@@ -68,6 +68,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) <= 1:
         print("No test case selected")
+        os._exit(0) 
     else:
         test_case = int(sys.argv[1])
 
