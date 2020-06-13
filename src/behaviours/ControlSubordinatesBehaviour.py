@@ -61,9 +61,9 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             await worker.stopAllBehaviours()
             p = self.manager.workersParams[i]
             self.agent.logger.log_info(f"Adding {jid} to the team")
-            active = True
+            notActive = self.manager.getNotActiveDespite(jid)
             active = self.manager.isAgentActive(jid)
-            created = FactoryAgent.FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost")
+            created = FactoryAgent.FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost", active=active, notActiveCovorkers = notActive)
             self.manager.workers[i] = created
             await created.start()
             created.web.start(hostname="localhost", port="10000")

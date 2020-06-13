@@ -56,6 +56,14 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
             await self.send(message)
     def isAgentActive(self, jid):
         return not self.workers[jid]
+    
+    def getNotActiveDespite(self, jid):
+        toRet = []
+        for key, value in self.workers.items():
+            if(key != jid and value == True):
+                toRet.append(key)
+        return toRet
+
 
     async def run(self):
         message = await self.receive(timeout=1)
@@ -113,6 +121,8 @@ class ManagerAgent(Agent):
     def isAgentActive(self, jid):
         return self.agentMonitor.isAgentActive(jid)
 
+    def getNotActiveDespite(self, jid):
+        return self.agentMonitor.getNotActiveDespite(jid)
     async def setup(self):
 
         self.creator = DeputeBehaviour(self, self.workersParams)

@@ -9,7 +9,7 @@ import asyncio
 PERIOD = 10
 
 class FactoryAgent(Agent):
-    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager, active = True):
+    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager, active = True, notActiveCovorkers = []):
         super(FactoryAgent, self).__init__(jid, password)
         self.active = active
         self.nameMy = name
@@ -22,6 +22,8 @@ class FactoryAgent(Agent):
         self.allCalculatedCosts = dict()
         self.coworkers = coworkers
         self.activeCoworkers = coworkers
+        for c in notActiveCovorkers:
+            self.activeCoworkers.remove(c)
         self.B0 = []
         self.currentSigma = []
         self.mailboxForLater = []

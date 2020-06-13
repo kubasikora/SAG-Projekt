@@ -22,7 +22,7 @@ class StateNotActive(State):
 
             # inform manager that agent went inactive
             result = {
-                "last_sequence": self.fAgent.currentSigma,
+                "sequence": self.fAgent.currentSigma,
                 "cost": self.fAgent.getCostAll(str(self.fAgent.currentSigma))
             }
             message = InactiveMessage(to=self.fAgent.manager, body=json.dumps(result))
