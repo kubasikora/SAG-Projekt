@@ -54,6 +54,8 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
         for _, worker in enumerate(self.workers):
             message = WatchdogMessage(to=worker, body="{message: 'Hello'}")
             await self.send(message)
+    def isAgentActive(self, jid):
+        return not self.workers[jid]
 
     async def run(self):
         message = await self.receive(timeout=1)
@@ -107,6 +109,9 @@ class ManagerAgent(Agent):
             if worker.Myjid == jid:
                 return worker, i
             i = i + 1
+    
+    def isAgentActive(self, jid):
+        return self.agentMonitor.isAgentActive(jid)
 
     async def setup(self):
 

@@ -9,8 +9,9 @@ import asyncio
 PERIOD = 10
 
 class FactoryAgent(Agent):
-    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager):
+    def __init__(self, jid, password, name, pricePerEl, pricePerChange, sameIndexes, coworkers, manager, active = True):
         super(FactoryAgent, self).__init__(jid, password)
+        self.active = active
         self.nameMy = name
         self.logger = Logger(name)
         self.Myjid = jid
@@ -103,7 +104,7 @@ class FactoryAgent(Agent):
     async def setup(self):
         self.logger.log_success("Setting up agent behaviours")
                 
-        if self.fsm is None:
+        if self.fsm is None and self.active == True:
             self.fsm = NegotiateFSMBehaviour(self)
             templateStates = StatesMessage.template(self.Myjid)
             self.add_behaviour(self.fsm, templateStates)
