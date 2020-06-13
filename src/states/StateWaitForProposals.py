@@ -6,7 +6,7 @@ from copy import deepcopy
 from behaviours import WorkingState
 from messages import StatesMessage
 
-MAX_TIME = 5 # 5 min is the max time of waiting for all other guys
+MAX_TIME = 1000 # 5 min is the max time of waiting for all other guys
 
 def parseMessage(body):
     without = body.replace("[", "")

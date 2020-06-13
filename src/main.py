@@ -22,10 +22,15 @@ def generate_agents_manager(data, order_dict):
     agent_number = data[test_case_order_dict]["agent_number"]
     car_manager = Cars(agent_number)
     number_of_cars = car_manager.get_cars_amount()
-    
+
+    with open("config/generate_vector5.json", "r") as read_file:
+        dictionary = json.load(read_file)
+        
+
     order_dict = {}
     for i in range(0, number_of_cars):
-        order_dict[i] = data[test_case_order_dict]["car_types"][i]
+        order_dict[i] = dictionary[i]
+
 
     agents = []
     agents_name = []

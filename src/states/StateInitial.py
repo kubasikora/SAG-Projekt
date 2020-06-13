@@ -109,6 +109,7 @@ class StateInitial(State):
         for i in indexes:
             if resp[i] != 0:
                 indexesToPerm.append(i)
+        self.fAgent.logger.log_info(f"size of list to permutate {str(len(indexesToPerm))}")
         indexesPerm = list(itertools.permutations(indexesToPerm))
         for permutation in indexesPerm:
             solution = []
