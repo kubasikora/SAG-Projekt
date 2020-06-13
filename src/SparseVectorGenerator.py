@@ -1,6 +1,6 @@
 import random, json
 
-agent_number = 3
+agent_number = 10
 
 car_types = pow(3, agent_number)
 
@@ -26,5 +26,5 @@ for i in range(0, car_types):
 '''
 
 
-with open("config/generate_vector6.json", "w") as write_file:
+with open("config/generate_vector_agent10.json", "w") as write_file:
     json.dump(car_vector, write_file)

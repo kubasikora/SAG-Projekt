@@ -23,10 +23,11 @@ def generate_agents_manager(data, order_dict):
     car_manager = Cars(agent_number)
     number_of_cars = car_manager.get_cars_amount()
 
-    with open("config/generate_vector6.json", "r") as read_file:
+    path = data[test_case_order_dict]["car_types_path"]
+
+    with open(path, "r") as read_file:
         dictionary = json.load(read_file)
         
-
     order_dict = {}
     for i in range(0, number_of_cars):
         order_dict[i] = dictionary[i]
@@ -85,18 +86,18 @@ if __name__ == "__main__":
             managerAgent.web.start(hostname="localhost", port="10001")
 
         elif test_case == 1:
-            print("Test case: 8 agents are working")
+            print("Test case: 10 agents are working")
             
-            test_case_order_dict = "order2"
+            test_case_order_dict = "order3"
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
             
             
         elif test_case == 2:
-            print("Test case: 8 agents are working, killing one random agent")
+            print("Test case: 10 agents are working, killing one random agent")
             
-            test_case_order_dict = "order1"
+            test_case_order_dict = "order3"
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
@@ -107,9 +108,9 @@ if __name__ == "__main__":
             
             
         elif test_case == 3:
-            print("Test case: 8 agents are working, killing random number of agents")
+            print("Test case: 10 agents are working, killing random number of agents")
             
-            test_case_order_dict = "order1"
+            test_case_order_dict = "order3"
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
@@ -120,9 +121,9 @@ if __name__ == "__main__":
 
 
         elif test_case == 4:
-            print("Test case: 8 agents are working, killing all agents")
+            print("Test case: 10 agents are working, killing all agents")
             
-            test_case_order_dict = "order1"
+            test_case_order_dict = "order3"
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
@@ -132,9 +133,9 @@ if __name__ == "__main__":
        
 
         elif test_case == 5:
-            print("Test case: 8 agents are working, killing random behaviour of random agent") 
+            print("Test case: 10 agents are working, killing random behaviour of random agent") 
         
-            test_case_order_dict = "order1"
+            test_case_order_dict = "order3"
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
