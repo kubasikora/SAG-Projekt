@@ -1,7 +1,7 @@
 from spade.behaviour import PeriodicBehaviour
 from spade.message import Message
 from behaviours.WatchdogBehaviour import WorkingState
-from messages import WatchdogMessage
+from messages import WatchdogMessage, StatesMessage
 from math import floor
 from agents import FactoryAgent
 
@@ -61,7 +61,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
             await worker.stopAllBehaviours()
             p = self.manager.workersParams[i]
             self.agent.logger.log_info(f"Adding {jid} to the team")
-            created = FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost")
+            created = FactoryAgent.FactoryAgent(p["jid"], p["password"],p["name"],p["priceEle"], p["priceChan"], p["sameIndex"],p["coworkers"], "manager@localhost")
             self.manager.workers[i] = created
             await created.start()
             created.web.start(hostname="localhost", port="10000")

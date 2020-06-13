@@ -48,7 +48,7 @@ class StateWaitForProposals(State):
         counter = 0
         self.clearMailboxForLater()
         while(len(waitingActiveCoworkers)>0):
-            msg = await self.receive(timeout = 60)
+            msg = await self.receive(timeout = 10)
             if msg is not None:
                 if msg.metadata["performative"] == "propose" and msg.metadata["language"] == "list" and str(msg.sender) in waitingActiveCoworkers :
                     sender = str(msg.sender)
@@ -61,6 +61,7 @@ class StateWaitForProposals(State):
                 if (counter < MAX_TIME):
                     sigma = self.fAgent.myProposals[len(self.fAgent.myProposals) - 1]
                     for c in waitingActiveCoworkers:
+                        self.fAgent.logger.log_error(f"Retrying sending proposition to {c}")
                         retry = StatesMessage(to=c, body=sigma)
                         retry.set_metadata("performative", "propose")
                         retry.set_metadata("language","list")

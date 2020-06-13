@@ -59,9 +59,10 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
         message = await self.receive(timeout=1)
         if message is not None:
             self.agent.logger.log_info(f"Agent {message.sender} reported inactivity")
-            self.workers[message.sender] = True
+            self.workers[str(message.sender)] = True
             
             # do wydzielenia do osobnej funkcji
+            self.agent.logger.log_info(f"Agent {self.workers} ")
             logic_accumulator = True
             for key in self.workers:
                 logic_accumulator &= self.workers[key]

@@ -7,7 +7,7 @@ import random
 from messages import *
 from behaviours import WorkingState
 
-MAX_TIMES = 2
+MAX_TIMES = 4
 
 def parseSets(string): # the format of the string [[[],[], ..], 'break', [[],[],...]]
     string = string.replace(" ", "")
