@@ -95,22 +95,22 @@ if __name__ == "__main__":
             
             
         elif test_case == 2:
-            print("Test case: 10 agents are working, killing one random agent")
+            print("Test case: 3 agents are working, killing one random agent")
             
-            test_case_order_dict = "order3"
+            test_case_order_dict = "order1"
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
             time.sleep(40)
             index = random.choice(range(0,agent_number))
-            managerAgent.logger.log_error(f" killing agent 2")
-            managerAgent.workers[2].stop()
+            managerAgent.logger.log_error(f" killing agent {index}")
+            managerAgent.workers[index].stop()
             
             
         elif test_case == 3:
-            print("Test case: 10 agents are working, killing random number of agents")
+            print("Test case: 3 agents are working, killing random number of agents")
             
-            test_case_order_dict = "order3"
+            test_case_order_dict = "order1"
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
@@ -121,9 +121,9 @@ if __name__ == "__main__":
 
 
         elif test_case == 4:
-            print("Test case: 10 agents are working, killing all agents")
+            print("Test case: 3 agents are working, killing all agents")
             
-            test_case_order_dict = "order3"
+            test_case_order_dict = "order1"
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
@@ -133,9 +133,9 @@ if __name__ == "__main__":
        
 
         elif test_case == 5:
-            print("Test case: 10 agents are working, killing random behaviour of random agent") 
+            print("Test case: 3 agents are working, killing random behaviour of random agent") 
         
-            test_case_order_dict = "order3"
+            test_case_order_dict = "order1"
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
