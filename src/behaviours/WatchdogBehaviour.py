@@ -21,11 +21,10 @@ class WatchdogBehaviour(PeriodicBehaviour):
 
     def checkState(self):
         toRet = WorkingState.OK
-        for behaviour in self.fAgent.behaviours:
-            if behaviour.is_killed():
-                behaviour.start()
-                self.manager.logger.log_error(f"Behaviour {str(behaviour)} killed")
-                toRet = WorkingState.RESTARTING
+        result = self.fAgent.checkBehaviours()
+        if (result == False):
+            self.fAgent.logger.log_warning("Restarting")
+            toRet = WorkingState.RESTARTING
         return toRet
 
     async def run(self):

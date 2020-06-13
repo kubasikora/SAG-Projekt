@@ -110,7 +110,24 @@ class FactoryAgent(Agent):
             self.crb.kill()
         elif(i == 2):
             self.csb.kill()
-
+    def checkBehaviours(self):
+        toRet = True
+        if self.cacb.is_killed():
+            self.cacb = ComputeAgentsCostBehaviour(self)
+            templateCost = CostMessage.template(self.Myjid)
+            self.add_behaviour(self.cacb, templateCost)
+            toRet = False
+        if self.crb.is_killed():
+            self.crb = ComputeRiskBehaviour(self)
+            templateRisks = RiskMessage.template(self.Myjid)
+            self.add_behaviour(self.crb, templateRisks)
+            toRet = False          
+        if self.csb.is_killed():
+            self.csb = ComputeBetterOrEqualBehaviour(self)    
+            templateSets = SetsMessage.template(self.Myjid)
+            self.add_behaviour(self.csb, templateSets)
+            toRet = False
+        return toRet
     
     async def setup(self):
         self.logger.log_success("Setting up agent behaviours")
