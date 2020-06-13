@@ -30,6 +30,8 @@ class ComputeRiskBehaviour(CyclicBehaviour):
         self.fAgent = agent
 
     def computeRisk(self, my, other):
+        if self.fAgent.worst == 0 : #agent is starting
+            return 0.0
         myUtility = float(self.fAgent.worst - self.fAgent.getMyCost(str(my),my))
         if myUtility == 0.0:
             return 1.0

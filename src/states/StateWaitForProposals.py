@@ -46,7 +46,7 @@ class StateWaitForProposals(State):
         for msg in toRemove:
             self.fAgent.mailboxForLater.remove(msg)
         counter = 0
-        self.clearMailboxForLater()
+        
         while(len(waitingActiveCoworkers)>0):
             msg = await self.receive(timeout = 10)
             if msg is not None:
@@ -60,7 +60,7 @@ class StateWaitForProposals(State):
                 counter = counter + 1
                 if (counter < MAX_TIME):
                     sigma = self.fAgent.myProposals[len(self.fAgent.myProposals) - 1]
-                    for c in waitingActiveCoworkers:
+                    for c in self.fAgent.activeCoworkers:
                         self.fAgent.logger.log_error(f"Retrying sending proposition to {c}")
                         retry = StatesMessage(to=c, body=sigma)
                         retry.set_metadata("performative", "propose")
@@ -70,10 +70,14 @@ class StateWaitForProposals(State):
                     for c in waitingActiveCoworkers:
                         alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
                         await self.send(alarmMsg)
+                        self.clearMailboxForLater()
+                        self.set_next_state(STATE_PROPOSE)
+                        return
         #print("I got all proposals "+self.fAgent.nameMy)
         for (mate, seq) in proposals.items():
             if seq not in self.fAgent.matesProposals[mate]:
                 self.fAgent.matesProposals[mate].append(seq)
         #print("End "+self.fAgent.nameMy)
+        self.clearMailboxForLater()
         self.set_next_state(STATE_COMPUTE_PROPOSALS)
 

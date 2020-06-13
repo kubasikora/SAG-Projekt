@@ -114,10 +114,12 @@ if __name__ == "__main__":
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(180)
+            time.sleep(50)
             random_number = random.choice(range(0,agent_number))
             for i in range(0, random_number):
-                 managerAgent.workers[random.choice(range(0,agent_number))].stop()
+                index = random.choice((range(0,agent_number)))
+                managerAgent.logger.log_error(f" killing agent {index}")
+                managerAgent.workers[index].stop()
 
 
         elif test_case == 4:
@@ -127,8 +129,9 @@ if __name__ == "__main__":
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(180)
+            time.sleep(40)
             for index in range(0,agent_number):
+                managerAgent.logger.log_error(f" killing agent {index}")
                 managerAgent.workers[index].stop()
        
 

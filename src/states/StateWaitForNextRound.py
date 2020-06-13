@@ -3,8 +3,10 @@ from spade.behaviour import State
 from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
-from messages import StatesMessage
+from messages import StatesMessage, WatchdogMessage
 
+
+MAX_TIMES = 100
 
 class StateWaitForNextRound(State):
     
@@ -45,6 +47,7 @@ class StateWaitForNextRound(State):
                     self.fAgent.activeCoworkers.remove(str(msg.sender))
         for msg in msgToRemove:
             self.fAgent.mailboxForLater.remove(msg)
+        count = 0
         while len(waitingCoworkers) > 0:
             resp = await self.receive(timeout=10)
             if resp is not None:
@@ -55,6 +58,18 @@ class StateWaitForNextRound(State):
                         self.fAgent.activeCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
+            else:
+                count = count + 1 
+                if count < MAX_TIMES:
+                    for cw in self.fAgent.activeCoworkers():
+                        msg = StatesMessage(to=cw, body=True)
+                        msg.set_metadata("language", "boolean")
+                        await self.send(msg)
+                else:
+                    for c in waitingCoworkers:
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
+                        await self.send(alarmMsg)
+                    break
         self.clearMailBox()
         self.set_next_state(STATE_PROPOSE)
 

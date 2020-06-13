@@ -46,7 +46,7 @@ class StateComputeB0(State):
                                 self.fAgent.logger.log_error("Error in B0, we have to raise exception!!!") 
                                 alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+cjid)
                                 await self.send(alarmMsg)
-                                # probably we should raise exception or something !!!!!!!!!!!!!
+
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == cjid:
                                 costSeq = costSeq + int(resp.body)

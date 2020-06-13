@@ -88,18 +88,14 @@ class StateComputeConcession(State):
             else:
                 counter = counter + 1 
                 self.fAgent.logger.log_info("we have not received and msgs from 5s")
-                if(counter < MAX_TIMES):
-                    for co in waitingCoworkers:
-                        msg = SetsMessage(to=co, body=self.fAgent.currentSigma)     # Instantiate the message
-                        msg.set_metadata("performative", "request")
-                        msg.set_metadata("language","list")
-                        msg.body = str(self.fAgent.currentSigma)
-                        await self.send(msg)
-                else:
+                if counter > MAX_TIMES:
                     self.fAgent.logger.log_info(f"something is wrong with {len(waitingCoworkers)}")
                     for c in waitingCoworkers:
                         alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
                         await self.send(alarmMsg)
+                        self.set_next_state(STATE_PROPOSE)
+                        return
+                        # set state to wiadomo co!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
         #en element is better at least for one agent
@@ -146,7 +142,7 @@ class StateComputeConcession(State):
                 newRisk = 0.0
                 counter = 0
                 while received == False:
-                    resp = await self.receive(timeout = 5)
+                    resp = await self.receive(timeout = 10)
                     if resp is not None: 
                         if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "float" :
                             received = True
@@ -161,6 +157,8 @@ class StateComputeConcession(State):
                             self.fAgent.logger.log_error(f"something is wrong with {co}")
                             alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
                             await self.send(alarmMsg)
+                            self.set_next_sate(STATE_PROPOSE)
+                            return
                 if newRisk <  myRisk:
                     # we found something what might be concession!
                     found = True
@@ -200,6 +198,8 @@ class StateComputeConcession(State):
                                 self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
                                 alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
                                 await self.send(alarmMsg)
+                                self.set_next_state(STATE_PROPOSE)
+                                return
                         else:
                             if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "int" and str(resp.sender) == co:
                                 tempCost = tempCost + int(resp.body)

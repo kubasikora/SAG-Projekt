@@ -28,6 +28,11 @@ class NegotiateFSMBehaviour(FSMBehaviour):
         self.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_NOT_ACTIVE)
         self.add_transition(source=STATE_WAIT_FOR_NEXT_ROUND, dest=STATE_PROPOSE)
 
+        self.add_transition(source=STATE_WAIT_FOR_PROPSALS, dest=STATE_PROPOSE)
+        self.add_transition(source=STATE_COMPUTE_RISK, dest=STATE_PROPOSE)
+        self.add_transition(source=STATE_COMPUTE_CONCESSION, dest=STATE_PROPOSE)
+        self.add_transition(source=STATE_COMPUTE_PROPOSALS, dest=STATE_PROPOSE)
+
     async def on_start(self):
         self.fAgent.logger.log_success(f"FSM starting at initial state {self.current_state}")
 

@@ -4,9 +4,9 @@ from agents import FactoryAgent
 from .metadata import *
 from copy import deepcopy
 import json
-from messages import StatesMessage, ResultsMessage
+from messages import StatesMessage, ResultsMessage, WatchdogMessage
 
-
+MAX_TIMES = 10
 #sprawdzanie czy dokonano dealu 
 class StateComputeProposals(State):
     
@@ -75,8 +75,9 @@ class StateComputeProposals(State):
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)
         ok = 0
         nok = 0
+        counter = 0
         while (len(waitingCoworkers) > 0):
-            msg = await self.receive(timeout = 5)
+            msg = await self.receive(timeout = 10)
             if msg is not None:
                 sender = str(msg.sender)
                 if msg.metadata["performative"] == "accept-proposal":
@@ -87,6 +88,16 @@ class StateComputeProposals(State):
                     nok = nok +1
                 else:
                     self.fAgent.saveMessage(msg)
+            else:
+                counter = counter + 1
+                if counter > MAX_TIMES:
+                    for co in waitingCoworkers:
+                        self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                        await self.send(alarmMsg)
+                    self.clearFinalResultsInSaved()
+                    self.set_next_state(STATE_PROPOSE)
+                    return
     
         self.fAgent.logger.log_info(f"I've got {ok} oks and {nok} not oks")
         agreementFound = False
@@ -111,7 +122,7 @@ class StateComputeProposals(State):
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)     
 
         agreementFound = self.checkFinalResultInSaved(waitingCoworkers,agreementFound)
-
+        counter = 0
         while (len(waitingCoworkers)> 0 and agreementFound == False):
             msg = await self.receive(timeout = 5)
             if msg is not None:
@@ -123,6 +134,16 @@ class StateComputeProposals(State):
                     waitingCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
+            else:
+                counter = counter +1
+                if counter > MAX_TIMES:
+                    for co in waitingCoworkers:
+                        self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                        await self.send(alarmMsg)
+                    self.clearFinalResultsInSaved()
+                    self.set_next_state(STATE_PROPOSE)
+                    return
 
         self.clearFinalResultsInSaved()
 

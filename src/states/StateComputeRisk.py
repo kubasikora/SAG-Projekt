@@ -52,7 +52,7 @@ class StateComputeRisk(State):
             else:
                 counter = counter +1
                 if (counter <= MAX_TIMES ):
-                    for co in waitingCoworkers:
+                    for co in self.fAgent.activeCoworkers:
                         msg = StatesMessage(to=co, body=myRisk)
                         msg.set_metadata("language", "float")
                         await self.send(msg)
@@ -61,6 +61,8 @@ class StateComputeRisk(State):
                     for c in waitingCoworkers:
                         alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
                         await self.send(alarmMsg)
+                        self.set_next_state(STATE_PROPOSE)
+                        return
                     # we should tell about it manager
 
                 # we need to find out who did not responded!
