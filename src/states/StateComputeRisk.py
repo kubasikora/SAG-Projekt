@@ -29,6 +29,8 @@ class StateComputeRisk(State):
                     myRisk = temp
 
         self.fAgent.logger.log_info(f"My risk equals {myRisk}")
+        if myRisk > 1.0005 :
+            self.fAgent.logger.log_error(f"My risk equals grater than 1.0")
         for co in self.fAgent.activeCoworkers:
             msg = StatesMessage(to=co, body=myRisk)
             msg.set_metadata("language", "float")

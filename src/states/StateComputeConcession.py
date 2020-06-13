@@ -161,7 +161,7 @@ class StateComputeConcession(State):
                             self.fAgent.logger.log_error(f"something is wrong with {co}")
                             alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
                             await self.send(alarmMsg)
-                if newRisk > myRisk:
+                if newRisk <  myRisk:
                     # we found something what might be concession!
                     found = True
                     break

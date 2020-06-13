@@ -41,12 +41,12 @@ class StateInitial(State):
         while(types > 0):
             mapEle = { "a": itemA, "b": itemB, "c": itemC}
             mapsSorted = sorted(mapEle.items(), key = lambda x: x[1])
-            if mapsSorted[0][0] != lastT or mapsSorted[1][1] == 0:
-                nextT = mapsSorted[0][0]
-            elif mapsSorted[1][0] != lastT or mapsSorted[2][1] == 0:
+            if mapsSorted[2][0] != lastT or mapsSorted[1][1] == 0:
+                nextT = mapsSorted[2][0]
+            elif mapsSorted[1][0] != lastT or mapsSorted[0][1] == 0:
                 nextT = mapsSorted[1][0]
             else:
-                nextT = mapsSorted[2][0]
+                nextT = mapsSorted[0][0]
 
             types = types -1
 
@@ -60,7 +60,7 @@ class StateInitial(State):
             else:
                 itemC = itemC -1
         
-        if(nextT != "n"):
+        if(lastT == "n"):
             cost = cost - priceChange #needed to get rid of initial cos (as the algorith consider first item as change)
         return cost
     """

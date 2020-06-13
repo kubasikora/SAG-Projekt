@@ -68,6 +68,7 @@ class MonitorAgentActivityBehaviour(CyclicBehaviour):
 
             if logic_accumulator:
                 # all agents reported inactivity
+                self.agent.logger.log_info(f"All agents are inactive")
                 fwd = ResultsMessage(to=message.to, body=message.body)
                 await self.send(fwd) # forward message to receiver behaviour
             
