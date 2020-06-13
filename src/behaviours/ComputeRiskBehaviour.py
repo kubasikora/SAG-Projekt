@@ -51,6 +51,3 @@ class ComputeRiskBehaviour(CyclicBehaviour):
                 msgResp.set_metadata("performative", "inform")
                 msgResp.set_metadata("language", "float")
                 await self.send(msgResp)
-
-    async def on_end(self):
-        await self.agent.stop()

@@ -91,7 +91,7 @@ class StateComputeConcession(State):
                 if counter > MAX_TIMES:
                     self.fAgent.logger.log_info(f"something is wrong with {len(waitingCoworkers)}")
                     for c in waitingCoworkers:
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+c)
                         await self.send(alarmMsg)
                         self.set_next_state(STATE_PROPOSE)
                         return
@@ -155,7 +155,7 @@ class StateComputeConcession(State):
                             await self.send(msg)
                         else:
                             self.fAgent.logger.log_error(f"something is wrong with {co}")
-                            alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                            alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+co)
                             await self.send(alarmMsg)
                             self.set_next_sate(STATE_PROPOSE)
                             return
@@ -196,7 +196,7 @@ class StateComputeConcession(State):
                                 await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+co)
                                 await self.send(alarmMsg)
                                 self.set_next_state(STATE_PROPOSE)
                                 return

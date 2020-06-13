@@ -31,6 +31,3 @@ class ComputeAgentsCostBehaviour(CyclicBehaviour):
                 msgResp = StatesMessage(to=msg.sender, body=cost)
                 msgResp.set_metadata("language", "int")
                 await self.send(msgResp)
-
-    async def on_end(self):
-        await self.agent.stop()

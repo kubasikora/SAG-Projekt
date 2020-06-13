@@ -68,7 +68,7 @@ class StateWaitForProposals(State):
                         await self.send(retry)
                 else:
                     for c in waitingActiveCoworkers:
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+c)
                         await self.send(alarmMsg)
                         self.clearMailboxForLater()
                         self.set_next_state(STATE_PROPOSE)

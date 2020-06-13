@@ -56,6 +56,3 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
                 msgResp = StatesMessage(to=msg.sender, body=response)
                 msgResp.set_metadata("language", "list")
                 await self.send(msgResp)
-
-    async def on_end(self):
-        await self.agent.stop()

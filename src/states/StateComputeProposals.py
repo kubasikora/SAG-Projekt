@@ -93,7 +93,7 @@ class StateComputeProposals(State):
                 if counter > MAX_TIMES:
                     for co in waitingCoworkers:
                         self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+co)
                         await self.send(alarmMsg)
                     self.clearFinalResultsInSaved()
                     self.set_next_state(STATE_PROPOSE)
@@ -139,7 +139,7 @@ class StateComputeProposals(State):
                 if counter > MAX_TIMES:
                     for co in waitingCoworkers:
                         self.fAgent.logger.log_error("Error") #probably we should raise exception or something !!!!!!!!!!!!!
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+co)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+co)
                         await self.send(alarmMsg)
                     self.clearFinalResultsInSaved()
                     self.set_next_state(STATE_PROPOSE)

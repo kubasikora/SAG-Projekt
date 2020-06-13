@@ -44,7 +44,7 @@ class StateComputeB0(State):
                                 await self.send(msg)
                             else:
                                 self.fAgent.logger.log_error("Error in B0, we have to raise exception!!!") 
-                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+cjid)
+                                alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+cjid)
                                 await self.send(alarmMsg)
 
                         else:

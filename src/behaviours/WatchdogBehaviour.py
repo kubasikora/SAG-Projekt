@@ -37,7 +37,7 @@ class WatchdogBehaviour(PeriodicBehaviour):
         else:
             self.fAgent.logger.log_warning("Got message")
             self.counter = 0
-            resp = WatchdogMessage(to=msg.sender, body=self.checkState)
+            resp = WatchdogMessage(to=msg.sender, body=self.checkState())
             await self.send(resp)
 
         if self.counter > 1:

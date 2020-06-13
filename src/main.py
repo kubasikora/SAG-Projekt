@@ -142,8 +142,11 @@ if __name__ == "__main__":
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(180)
-            # managerAgent.workers[random.choice(range(0,agent_number))]. => ???
+            time.sleep(30)
+            indexB = random.choice(range(0,2))
+            indexW = random.choice(range(0,agent_number))
+            managerAgent.logger.log_error(f" killing agent {indexW} behaviour {indexB}")
+            managerAgent.workers[indexW].killRandomBehaviour(indexB)
 
         else:
             print("Wrong number")

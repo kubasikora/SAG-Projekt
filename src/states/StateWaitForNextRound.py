@@ -67,7 +67,7 @@ class StateWaitForNextRound(State):
                         await self.send(msg)
                 else:
                     for c in waitingCoworkers:
-                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+""+c)
+                        alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+c)
                         await self.send(alarmMsg)
                     break
         self.clearMailBox()

@@ -103,6 +103,15 @@ class FactoryAgent(Agent):
     def saveMessage(self, msg):
         self.mailboxForLater.append(msg)
     
+    def killRandomBehaviour(self, i):
+        if( i == 0):
+            self.cacb.kill()
+        elif(i == 1):
+            self.crb.kill()
+        elif(i == 2):
+            self.csb.kill()
+
+    
     async def setup(self):
         self.logger.log_success("Setting up agent behaviours")
                 
