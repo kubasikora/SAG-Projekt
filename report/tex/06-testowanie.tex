@@ -50,7 +50,7 @@ W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny
 [manager@localhost: 2020-06-14 14:31:54.287116] Got optimal sequence [7616, 7616, 7616, 7616, 28274, 28274, 47912, 47912, 47912, 47912, 38679, 38679, 38679, 38679, 4609, 4609, 4609, 4609, 4609, 15489, 43198, 43198, 43198, 23900, 35267, 35267, 35267, 35267, 35267, 35267, 35267] with total cost of 1760
 [main: 2020-06-14 14:31:54.721081] Agents finished
 \end{lstlisting}
-\subsection{Testowanie mechanizmu naprawczego zachowanie}
+\subsection{Testowanie mechanizmu naprawczego zachowania}
 Testowanie mechanizmu naprawczego zachowanie zostało przeprowadzane dla systemu z trzema agentami. Po określonym czasie losowany został agent oraz jego zachowanie, które to następnie zostało zabijane. Restartowanie samego zachowania jest błyskawiczne, dlatego można zauważyć, że już w następnej iteracji zachowania \texttt{ControlSubordinatesBehaviour} zachowanie działa poprawnie. W przedstawionym poniżej teście wylosowany został AgentB oraz zachowanie \texttt{ComputeAgentsCost}. W logach można zauważyć, że o 14:49:33 zostało zabite zachowanie oraz, że wiadomości wysłane do tego zachowania nie zostały dostarczone. Ponad to, można zauważyć, że AgentB wykrył niedziałające zachowanie o 14:49:48. Od tego czasu pozostali agenci nie mieli problemu z nawiązaniem kontaktu, o czym może świadczyć fakt błyskawicznego przejścia do kolejnego stanu agentów AgentA i AgentC.
 \begin{lstlisting}
 [manager@localhost: 2020-06-14 14:49:33.063398]  killing agent 1 behaviour 
