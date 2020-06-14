@@ -32,7 +32,6 @@ class StateWaitForProposals(State):
             self.fAgent.mailboxForLater.remove(msg)
 
     async def run(self):
-        self.clearMailboxForLater()
         waitingActiveCoworkers = deepcopy(self.fAgent.activeCoworkers)
         self.fAgent.logger.log_info(f"Waiting for proposals from {waitingActiveCoworkers}")
         toRemove = []
