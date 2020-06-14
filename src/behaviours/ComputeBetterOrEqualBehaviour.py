@@ -2,6 +2,8 @@ from spade.behaviour import CyclicBehaviour
 from agents import FactoryAgent
 from spade.message import Message
 from messages import StatesMessage
+
+MAX_LENGTH = 1000 * 40
 """
     Zachowanie do wyznaczania zbioru sekwencji, ktore dla danego agenta generuja lepszy lub przynajmniej taki samy koszt
 """
@@ -37,7 +39,19 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
                     better.append(sigma)
                 elif (self.fAgent.getMyCost(str(sigma), sigma)== cost):
                     equal.append(sigma)   
-        return [better, equal]                      
+        return [better, equal]  
+
+    def divideString(self, response):
+        toRet = []
+        howMany = int(float(len(response)) / float(MAX_LENGTH)) + 1
+        for i in range(howMany):
+            substr = ""
+            if i == howMany - 1 :
+                substr = response[i*MAX_LENGTH:] 
+            else:
+                substr = response[i*MAX_LENGTH: (i+1)*MAX_LENGTH ]   
+            toRet.append(substr)    
+        return howMany, toRet                  
 
 
     async def run(self):
@@ -53,6 +67,11 @@ class ComputeBetterOrEqualBehaviour(CyclicBehaviour):
                 response.append("break")
                 response.append(sets[1])
 
-                msgResp = StatesMessage(to=msg.sender, body=response)
-                msgResp.set_metadata("language", "list")
-                await self.send(msgResp)
+                howMany, subsets = self.divideString(str(response))
+
+                for i in range(howMany):
+                    msgResp = StatesMessage(to=msg.sender, body=subsets[i])
+                    msgResp.set_metadata("language", "list")
+                    msgResp.set_metadata("which" , str(i+1)) # bedziemy wysylac pojedynczo
+                    msgResp.set_metadata("howMany", str(howMany))
+                    await self.send(msgResp)
