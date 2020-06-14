@@ -1,6 +1,8 @@
 \todo{krótkie podsumowanie, wnioski i przemyślenia}
 Podczas projektu udało się zaimplementować algorytm pozwalający na rozwiązanie problemu minimalizacji kosztu globalnego za pomocą zespołu agentów minimalizujących lokalnie koszty. Algorytm nie daje gwarancji znalezienia optymalnego globalnie rozwiązania, ale dla ograniczonych wektorów wejściowych pozwala na uzyskanie rezultatu w racjonalnym czasie.
 
+Algorytm zaproponowany przez autorów~\cite{wooldridge1996production} nie sprawdza się dla dużych zbiorów B0'. Już dla zbioru 10 nierozróżnialnych typów aut dla agenta jego zbiór B0' przekracza $10!$ co stanowi znaczne ograniczenie zastosowania. 
+
 Okazało się, że w przypadku mechanizmów naprawczych, znacznie większą rolę ma \texttt{ManagerAgent}, który wykrywa błąd w zachowaniu po maksymalnie 60. sekundach. W przypadku automatu stanów, obliczanie zbioru B0 dla dużych zbiorów B0' trwa dłużej, z tego powodu, by umożliwić działanie algorytmu należało zwiększyć limit.
 
 \todo{cos o tym, ze to sa preto optymalnie i ze zawsze jest najlepiej dla jednego ziomala i ze to jest tak, zeby wyrownac straty srednio}
