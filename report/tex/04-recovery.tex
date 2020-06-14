@@ -1,6 +1,6 @@
 \todo{opisać mechanizm recovery na który się zdecydujemy, manager kontroluje agenty, jak on padnie to ktorys z nich przejmuje zadanie}
 
-Dla systemów agentowych kluczowym zagadnieniem jest stworzenie mechanizmów naprawczych. Należy założyć, że zarówno komunikacja pomiędzy agentami, jak i agenci jako procesy mogą ulec awarii. Sytuacje takie należy przede wszystkim wykryć oraz należy, jeśli jest to możliwe, naprawić problem. 
+Dla systemów agentowych kluczowym zagadnieniem jest stworzenie mechanizmów naprawczych. Należy założyć, że zarówno komunikacja pomiędzy agentami, jak i agenci jako procesy mogą ulec awarii. Sytuacje takie należy przede wszystkim wykryć oraz, jeśli jest to możliwe, należy naprawić problem. 
 
 \subsection{Założenia}
 
@@ -18,7 +18,7 @@ Aby zrealizować mechanizmy odpornościowe zaprojektowano dwa zachowania: \textt
  
 Zaimplementowano mechanizmy naprawcze dla następujących sytuacji:
 \begin{itemize}
-	\item zabite zachowania (inne niż \texttt{WatchdogBehaviour}) w \texttt{FactoryAgent}.
+	\item wykrycie zabitego zachowania w \texttt{FactoryAgent}.
 	\item brak odpowiedzi na wiadomości od współpracowników.
 	\item brak odpowiedzi na wiadomość od \texttt{ManagerAgent}
 \end{itemize}
@@ -28,13 +28,11 @@ Ponadto system pozwala na wykrycie awarii zachowania \texttt{ControlSubordinates
 \subsection{Zaimplementowane mechanizmy}
 Zadaniem \texttt{ControlSubordinatesBehaviour} jest monitorowanie działania poszczególnych agentów \texttt{FactoryAgent}. Jest to zachowanie cykliczne, które z określoną częstotliwością wysyła wiadomość typu \texttt{WatchdogMessage} do zachowań \texttt{WatchdogBehaviour} wszystkich podwładnych agentów. Zachowanie to oczekuje na odpowiedź z \texttt{WorkingState}. 
 
-Enum \texttt{WorkingState} ma zdefiniowane trzy wartości: OK, RESTARTING oraz COMPLAINT. Pierwsze dwie wysyłane są do Managera w odpowiedzi na \texttt{WatchdogMessage}, ostatnie wysyłane jest przez pozostałych agentów, jeśli nie będą oni w stanie skontaktować się z współpracownikami.
+Enum \texttt{WorkingState} ma zdefiniowane trzy wartości: OK, RESTARTING oraz COMPLAINT. Pierwsze dwie wysyłane są do Managera w odpowiedzi na \texttt{WatchdogMessage}, ostatnie wysyłane jest przez pozostałe zachowania agentów, jeśli nie będą one w stanie skontaktować się z współpracownikami.
 
-Zachowanie \texttt{ControlSubordinatesBehaviour} zlicza ile razy pod rząd ...
+Zachowanie \texttt{ControlSubordinatesBehaviour} zlicza ile razy pod rząd nie uzyskano odpowiedzi od poszczególnych podwładnych agentów lub uzyskano odpowiedź RESTARTING. Jeśli okaże się, że agenci nie odpowiadali, lub próbowali zrestartować swoje zachowania ponad dwa razy pod rząd, manager restartuje agenta.
 
-\subsection{Wyniki testowania dla mechanizmów dla agentów}
 
-\subsection{Wyniki testowania dla mechanizmów dla zachowań}
 
 
 
