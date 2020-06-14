@@ -63,7 +63,7 @@ Pierwszym zachowaniem jest \texttt{Depute}, którego rolą jest jednorazowe stwo
 
 Kolejnym zachowaniem jest \texttt{MonitorAgentActivity}. Rolą tego zachowania jest monitorowanie stanu stołu negocjacyjnego. Jeżeli agent reprezentujący daną komórkę fabryki wyczerpał swoje możliwości, zgłasza ten fakt do zarządcy, wykorzystując właśnie to zachowanie. Obecność tego zachowania pozwala na uniknięcie wyścigów krytycznych, czyli sytuacji podczas której wszyscy agenci równocześnie rezygnują z~dalszych negocjacji i~żaden z~nich nie wysyła informacji o~ostatecznym rozwiązaniu.
 
-Ostatnim elementem agenta nadzorującego jest zachowanie \texttt{ReceiveResult}, które oczekują na wiadomość z~ostatecznie ustaloną sekwencją działania. W~momencie otrzymania wyniku, agent wstrzymuje działanie wszystkich agentów w~systemie, prezentuje wynik i~zamyka program. 
+Ostatnim elementem agenta nadzorującego jest zachowanie \texttt{ReceiveResult}, które oczekuje na wiadomość z~ostatecznie ustaloną sekwencją działania. W~momencie otrzymania wyniku, agent wstrzymuje działanie wszystkich agentów w~systemie, prezentuje wynik i~zamyka program. 
 
 \subsubsection{Agent komórki fabryki}
 Agent typu \texttt{Factory Agent} składa się z~czterech, oddzielnych zachowań, które realizują różne funkcje w~systemie. Podział na zachowania został przedstawiony na rysunku~\ref{fig:factory-behaviours}.
