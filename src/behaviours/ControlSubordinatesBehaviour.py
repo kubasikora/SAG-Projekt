@@ -6,6 +6,7 @@ from math import floor
 from agents import FactoryAgent
 
 PERIOD = 10
+MAX = 2
 
 class ControlSubordinatesBehaviour(PeriodicBehaviour):
     def __init__(self, agent, period, startTime, subordinates):
@@ -22,7 +23,7 @@ class ControlSubordinatesBehaviour(PeriodicBehaviour):
         for sub in self.subordinates.keys():
             if sub not in responded:
                 self.subordinates[sub] = self.subordinates[sub] + 1
-            if self.subordinates[sub] > 2:
+            if self.subordinates[sub] > MAX:
                 if(sub not in toRestart):
                     toRestart.append(sub)
                 self.subordinates[sub] = 0

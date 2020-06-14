@@ -6,7 +6,7 @@ from copy import deepcopy
 from messages import StatesMessage, WatchdogMessage
 
 
-MAX_TIMES = 100
+MAX_TIMES = 10
 
 class StateWaitForNextRound(State):
     
@@ -49,7 +49,7 @@ class StateWaitForNextRound(State):
             self.fAgent.mailboxForLater.remove(msg)
         count = 0
         while len(waitingCoworkers) > 0:
-            resp = await self.receive(timeout=10)
+            resp = await self.receive(timeout=120)
             if resp is not None:
                 sender = str(resp.sender)
                 if resp.metadata["performative"] == "inform" and resp.metadata["language"] == "boolean" and str(resp.sender) in waitingCoworkers:
@@ -61,12 +61,13 @@ class StateWaitForNextRound(State):
             else:
                 count = count + 1 
                 if count < MAX_TIMES:
-                    for cw in self.fAgent.activeCoworkers():
+                    for cw in waitingCoworkers:
                         msg = StatesMessage(to=cw, body=True)
                         msg.set_metadata("language", "boolean")
                         await self.send(msg)
                 else:
                     for c in waitingCoworkers:
+                        self.fAgent.logger.log_error(f"problem with {c}")
                         alarmMsg = WatchdogMessage(to = self.fAgent.manager, body = str(WorkingState.COMPLAINT)+" "+c)
                         await self.send(alarmMsg)
                     break

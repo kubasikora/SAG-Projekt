@@ -106,16 +106,6 @@ class StateComputeConcession(State):
                         waitingCoworkers.remove(sender)
                 else:
                     self.fAgent.saveMessage(msg)
-                    """
-                    sender = str(msg.sender)
-                    matesPropositions.append(parseSets(msg.body))
-                    try:
-                        waitingCoworkers.remove(sender)
-                    except:
-                        self.fAgent.logger.log_info(f"got two responses from {sender}")
-                else:
-                    self.fAgent.saveMessage(msg)
-                    """
             else:
                 counter = counter + 1 
                 self.fAgent.logger.log_info("we have not received and msgs from 5s")
@@ -126,12 +116,12 @@ class StateComputeConcession(State):
                         await self.send(alarmMsg)
                         self.set_next_state(STATE_PROPOSE)
                         return
+        
         #we received All msgs!
         allMsg = self.linkMessages(matesPropositionsAll, matesPropositionsAllCount)
         for s in allMsg:
             matesPropositions.append(parseSets(s))
 
-                        # set state to wiadomo co!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
         #en element is better at least for one agent
