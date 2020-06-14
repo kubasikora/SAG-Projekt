@@ -8,5 +8,9 @@
 *.out
 *.synctex.gz
 *.synctex(busy)
+*.nav
+*.snm
+*.toc
 
 SprawozdanieSAG.pdf
+PrezentacjaSAG.pdf
