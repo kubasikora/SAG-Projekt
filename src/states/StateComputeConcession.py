@@ -59,6 +59,24 @@ class StateComputeConcession(State):
                 risk = temp
         return risk
 
+    def linkMessages(self, allMessages, allMessagesLen):
+        keys = allMessages.keys()
+        toRet = [] # list of strings 
+        for k in keys:
+            length = len(allMessages[k])
+            if (length != allMessagesLen[k]):
+                self.fAgent.logger.log_error("There is a problem with messages!!")
+            oneAgents = [None] * length
+            for m in allMessages[k]:
+                which = int(m.metadata["which"]) - 1
+                oneAgents[which] = m.body
+            msgAllBody = ""
+            for string in oneAgents:
+                msgAllBody = msgAllBody + string
+            toRet.append(msgAllBody)
+            # ... we should add messages in 
+        return toRet
+
     async def run(self):
         self.fAgent.logger.log_info("Computing concession")
         #1. we should propose something what is at least as good for our mates as the one whe proposed before
@@ -71,12 +89,24 @@ class StateComputeConcession(State):
             await self.send(msg)
 
         waitingCoworkers = deepcopy(self.fAgent.activeCoworkers)
+        matesPropositionsAll = dict((worker, []) for worker in self.fAgent.activeCoworkers)
+        matesPropositionsAllCount = dict((worker, -1) for worker in self.fAgent.activeCoworkers)
         matesPropositions = []
         counter = 0
         while len(waitingCoworkers) > 0:
             msg = await self.receive(timeout = 5)
             if msg is not None:
-                if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "list" :
+                if msg.metadata["performative"] == "inform" and msg.metadata["language"] == "list" and str(msg.sender) in waitingCoworkers :
+                    sender = str(msg.sender)
+                    if matesPropositionsAllCount[sender] == -1:
+                        #first msg
+                        matesPropositionsAllCount[sender] = int(msg.metadata["howMany"])
+                    matesPropositionsAll[sender].append(msg)
+                    if len(matesPropositionsAll[sender]) == matesPropositionsAllCount[sender]:
+                        waitingCoworkers.remove(sender)
+                else:
+                    self.fAgent.saveMessage(msg)
+                    """
                     sender = str(msg.sender)
                     matesPropositions.append(parseSets(msg.body))
                     try:
@@ -85,6 +115,7 @@ class StateComputeConcession(State):
                         self.fAgent.logger.log_info(f"got two responses from {sender}")
                 else:
                     self.fAgent.saveMessage(msg)
+                    """
             else:
                 counter = counter + 1 
                 self.fAgent.logger.log_info("we have not received and msgs from 5s")
@@ -95,6 +126,11 @@ class StateComputeConcession(State):
                         await self.send(alarmMsg)
                         self.set_next_state(STATE_PROPOSE)
                         return
+        #we received All msgs!
+        allMsg = self.linkMessages(matesPropositionsAll, matesPropositionsAllCount)
+        for s in allMsg:
+            matesPropositions.append(parseSets(s))
+
                         # set state to wiadomo co!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         #right not in matesPropositions we have got elements for each of active coworkers
         #we should combine it so that we should check that an element which we got from one coworker is also in others and that
