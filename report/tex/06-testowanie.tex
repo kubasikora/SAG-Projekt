@@ -33,7 +33,7 @@ W przypadku testowania systemu dla 8 agentów, wykorzystano plik konfiguracyjny 
 [manager@localhost: 2020-06-14 13:53:47.057812] Got optimal sequence [686, 1718, 1718, 1718, 1718, 1718, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 3307, 3307, 3307, 3307, 3307, 3307, 3842, 3842, 3842, 2597, 2597, 2597, 2597, 2597, 2597, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 4432, 6492, 6492, 6492] with total cost of 1820
 \end{lstlisting}
 \subsection{Testowanie dla 10 agentów}
-W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent10.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 2880, 1728, 1296, 1728, 4320, 1728, 1296, 4320, 1728, 1728. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po około ...
+W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent10.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 2880, 1728, 1296, 1728, 4320, 1728, 1296, 4320, 1728, 1728. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po około 33 minutach.
 \begin{lstlisting}
 [manager@localhost: 2020-06-14 13:58:58.970668] DeputeBehaviour for agentj@localhost created
 [manager@localhost: 2020-06-14 13:58:58.982009] Task sent to agenta@localhost
@@ -48,7 +48,8 @@ W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny
 [manager@localhost: 2020-06-14 13:58:59.056439] Task sent to agentj@localhost
 [manager@localhost: 2020-06-14 13:58:59.056495] Every task sent
 ...
-
+[manager@localhost: 2020-06-14 14:31:54.287116] Got optimal sequence [7616, 7616, 7616, 7616, 28274, 28274, 47912, 47912, 47912, 47912, 38679, 38679, 38679, 38679, 4609, 4609, 4609, 4609, 4609, 15489, 43198, 43198, 43198, 23900, 35267, 35267, 35267, 35267, 35267, 35267, 35267] with total cost of 1760
+[main: 2020-06-14 14:31:54.721081] Agents finished
 \end{lstlisting}
 \subsection{Testowanie mechanizmu naprawczego zachowanie}
 

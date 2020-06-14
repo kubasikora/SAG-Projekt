@@ -1,10 +1,9 @@
-\todo{krótkie podsumowanie, wnioski i przemyślenia}
-Podczas projektu udało się zaimplementować algorytm pozwalający na rozwiązanie problemu minimalizacji kosztu globalnego za pomocą zespołu agentów minimalizujących lokalnie koszty. Algorytm nie daje gwarancji znalezienia optymalnego globalnie rozwiązania, ale dla ograniczonych wektorów wejściowych pozwala na uzyskanie rezultatu w racjonalnym czasie.
+Podczas projektu udało się zaimplementować algorytm pozwalający na rozwiązanie problemu minimalizacji kosztu globalnego za pomocą zespołu agentów minimalizujących lokalne koszty. Znalezione rozwiązanie nie jest globalnie optymalne jednak jest na tyle rozsądne aby uzyskać egalitarny kompromis pomiędzy kosztami poszczególnych komórek fabryki.
+
+Osiągnięcie najmniejszego możliwego kosztu całej fabryki mogłoby wiązać się z sytuacją w której kilka komórek ma bardzo duży koszt, podczas gdy pozostałe mają najniższy z możliwych. Egalitarne podejście do problemu pozwala wyrównać koszty poszczególnych komórek, co w realnym świecie wiązałoby się z równomiernym zużyciem elementów fabryki.
 
 Algorytm zaproponowany przez autorów~\cite{wooldridge1996production} nie sprawdza się dla dużych zbiorów B0'. Już dla zbioru 10 nierozróżnialnych typów aut dla agenta jego zbiór B0' przekracza $10!$ co stanowi znaczne ograniczenie zastosowania. 
 
 Okazało się, że w przypadku mechanizmów naprawczych, znacznie większą rolę ma \texttt{ManagerAgent}, który wykrywa błąd w zachowaniu po maksymalnie 60. sekundach. W przypadku automatu stanów, obliczanie zbioru B0 dla dużych zbiorów B0' trwa dłużej, z tego powodu, by umożliwić działanie algorytmu należało zwiększyć limit.
-
-\todo{cos o tym, ze to sa preto optymalnie i ze zawsze jest najlepiej dla jednego ziomala i ze to jest tak, zeby wyrownac straty srednio}
 
 Wykorzystanie biblioteki \texttt{SPADE} nie było najlepszą decyzją projektową. Okazało się, że nie wspiera ona tak podstawowych akcji jak na przykład resetowanie agentów i nie jest najwygodniejsza w użyciu. \texttt{SPADE} jest cały czas rozwijaną platformą, o czym może świadczyć fakt, że najnowsza wersja pochodzi z 22.05.2020r.
