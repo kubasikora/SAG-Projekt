@@ -1,1 +1,59 @@
 \todo{na jakim kompoie jakie wyniki ile czasu komentarz ze niekoniecznie optymalne}
+System został przetestowany dla siedmiu przypadków. Do testowania wykorzystano maszynę wirtualną z system Ubuntu 18.04. Dla każdego z przypadków, założono, że każdy agent odpowiada za cechę, która może mieć trzy wartości.
+\subsection{Testowanie dla 3 agentów}
+W przypadku testowania systemu dla 3 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent3.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 3456, 2880 i 1728. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po niecałych 29. sekundach.
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 13:15:42.700852] DeputeBehaviour for agentc@localhost created
+[manager@localhost: 2020-06-14 13:15:42.701610] Task sent to agenta@localhost
+[manager@localhost: 2020-06-14 13:15:42.702028] Task sent to agentb@localhost
+[manager@localhost: 2020-06-14 13:15:42.702429] Task sent to agentc@localhost
+[manager@localhost: 2020-06-14 13:15:42.702685] Every task sent
+...
+[manager@localhost: 2020-06-14 13:16:11.452603] Got optimal sequence [26, 26, 26, 26, 6, 6, 6, 6, 6, 6, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10, 18, 0, 0, 2, 2, 2] with total cost of 625
+[main: 2020-06-14 13:16:11.673955] Agents finished
+\end{lstlisting}
+
+\subsection{Testowanie dla 8 agentów}
+W przypadku testowania systemu dla 8 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent8.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 2880, 1728, 1728, 1728, 3456, 1728, 5760 i 8640. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po około $\num{13,5}$ minutach.
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 13:40:20.139839] Task sent to agenta@localhost
+[manager@localhost: 2020-06-14 13:40:20.140737] Task sent to agentb@localhost
+[manager@localhost: 2020-06-14 13:40:20.141691] Task sent to agentc@localhost
+[manager@localhost: 2020-06-14 13:40:20.142648] Task sent to agentd@localhost
+[manager@localhost: 2020-06-14 13:40:20.143593] Task sent to agente@localhost
+[manager@localhost: 2020-06-14 13:40:20.145955] Task sent to agentf@localhost
+[manager@localhost: 2020-06-14 13:40:20.147695] Task sent to agentg@localhost
+[manager@localhost: 2020-06-14 13:40:20.148860] Task sent to agenth@localhost
+[manager@localhost: 2020-06-14 13:40:20.150821] Every task sent
+...
+[AgentA: 2020-06-14 13:53:47.057112] Agreement found!!
+[AgentA: 2020-06-14 13:53:47.057171] The end
+[AgentA: 2020-06-14 13:53:47.057211] The cost 1820
+[AgentA: 2020-06-14 13:53:47.057246] Winning sequence [686, 1718, 1718, 1718, 1718, 1718, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 3307, 3307, 3307, 3307, 3307, 3307, 3842, 3842, 3842, 2597, 2597, 2597, 2597, 2597, 2597, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 4432, 6492, 6492, 6492]
+[manager@localhost: 2020-06-14 13:53:47.057812] Got optimal sequence [686, 1718, 1718, 1718, 1718, 1718, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 1029, 3307, 3307, 3307, 3307, 3307, 3307, 3842, 3842, 3842, 2597, 2597, 2597, 2597, 2597, 2597, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 2192, 4432, 6492, 6492, 6492] with total cost of 1820
+\end{lstlisting}
+\subsection{Testowanie dla 10 agentów}
+W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent10.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 2880, 1728, 1296, 1728, 4320, 1728, 1296, 4320, 1728, 1728. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po około ...
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 13:58:58.970668] DeputeBehaviour for agentj@localhost created
+[manager@localhost: 2020-06-14 13:58:58.982009] Task sent to agenta@localhost
+[manager@localhost: 2020-06-14 13:58:58.996478] Task sent to agentb@localhost
+[manager@localhost: 2020-06-14 13:58:59.004003] Task sent to agentc@localhost
+[manager@localhost: 2020-06-14 13:58:59.018002] Task sent to agentd@localhost
+[manager@localhost: 2020-06-14 13:58:59.024701] Task sent to agente@localhost
+[manager@localhost: 2020-06-14 13:58:59.031039] Task sent to agentf@localhost
+[manager@localhost: 2020-06-14 13:58:59.037846] Task sent to agentg@localhost
+[manager@localhost: 2020-06-14 13:58:59.043934] Task sent to agenth@localhost
+[manager@localhost: 2020-06-14 13:58:59.050280] Task sent to agenti@localhost
+[manager@localhost: 2020-06-14 13:58:59.056439] Task sent to agentj@localhost
+[manager@localhost: 2020-06-14 13:58:59.056495] Every task sent
+...
+
+\end{lstlisting}
+\subsection{Testowanie mechanizmu naprawczego zachowanie}
+
+\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowego agenta \texttt{FactoryAgent}}
+
+\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowej liczby losowych agentów \texttt{FactoryAgent}}
+
+\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia wszystkich agentów \texttt{FactoryAgent}}
