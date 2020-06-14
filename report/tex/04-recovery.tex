@@ -30,9 +30,9 @@ Aby zrealizować mechanizmy odpornościowe zaprojektowano dwa zachowania: \textt
 
 Zadaniem \texttt{ControlSubordinatesBehaviour} jest monitorowanie działania poszczególnych agentów \texttt{FactoryAgent}. Jest to zachowanie cykliczne, które z określoną częstotliwością wysyła wiadomość typu \texttt{WatchdogMessage} do zachowań \texttt{WatchdogBehaviour} wszystkich podwładnych agentów. Zachowanie to oczekuje na odpowiedź z \texttt{WorkingState}. 
 
-Enum \texttt{WorkingState} ma zdefiniowane trzy wartości: \texttt{OK}, \texttt{RESTARTING} oraz \texttt{COMPLAINT}. Pierwsze dwie wysyłane są do Managera w odpowiedzi na \texttt{WatchdogMessage}, a ostatnie wysyłane jest przez pozostałe zachowania agentów, jeśli nie będą one w stanie skontaktować się z współpracownikami.
+Enum \texttt{WorkingState} ma zdefiniowane trzy wartości: \texttt{OK}, \texttt{RESTARTING} oraz \texttt{COMPLAINT}. Pierwsze dwie wysyłane są do Managera w odpowiedzi na \texttt{WatchdogMessage}, a ostatnie wysyłane jest przez pozostałe zachowania agentów, jeśli nie będą one w stanie skontaktować się z współpracownikami. Diagram sekwencji dla mechanizmu naprawczego w momencie wykrycia nieodpowiadania na wiadomości przez współpracownika został przedstawiony na rysunku \ref{fig:recovery-kablowanie}.
 
-Zachowanie \texttt{ControlSubordinatesBehaviour} zlicza ile razy pod rząd nie uzyskano odpowiedzi od poszczególnych podwładnych agentów lub uzyskano odpowiedź \texttt{RESTARTING}. Jeśli okaże się, że agenci nie odpowiadali lub próbowali zrestartować swoje zachowania ponad dwa razy pod rząd, manager restartuje agenta. 
+Zachowanie \texttt{ControlSubordinatesBehaviour} zlicza ile razy pod rząd nie uzyskano odpowiedzi od poszczególnych podwładnych agentów lub uzyskano odpowiedź \texttt{RESTARTING}. Jeśli okaże się, że agenci nie odpowiadali lub próbowali zrestartować swoje zachowania ponad dwa razy pod rząd, manager restartuje agenta. Diagram sekwencji dla mechanizmu naprawczego agentów został przedstawiony na rysunku \ref{fig:recovery-pingowanie}.
 
 Przy tworzeniu agenta w czasie trwania negocjacji istotne jest, aby przekazać mu dwie kluczowe zmienne stanu: jego aktywność oraz aktywność współpracowników. Są to zmienne krytyczne z punktu widzenia algorytmu negocjacji. 
 
@@ -40,8 +40,21 @@ Ponadto, jeśli restartowany agent aktywnie brał udział w negocjacjach, nie na
 
 Agenty, jeśli wykryją, że któryś z ich współpracowników zbyt długo nie przysłał wiadomości ze swoją informacją lub decyzją wysyłają do managera wiadomość ze skargą. W treści wiadomości zapisany jest jid agenta, który nie wysłał wiadomości. Zmiana stanu jest dokonywana, by ponownie zsynchronizować agenty. \texttt{STATE\_PROPOSE} jest pierwszym stanem wymagającym synchronizacji po dokonaniu inicjalizacji.
 
-Zachowanie \texttt{WatchdogBehaviour} agenta \texttt{FactoryAgent} jest również cykliczne. Z zadaną częstotliwością sprawdza, czy przyszła wiadomość typu \texttt{WatchdogMessage} od zarządcy. Aby odpowiedzieć, sprawdza stan zachowań będącymi serwisami agenta oraz zwraca wartość \texttt{OK} jeśli wszystkie serwisy działają poprawnie lub \texttt{RESTARTING} jeśli okazało się, że któreś zachowanie został zabite. W sprawdzaniu zachowań pomięty został \texttt{NegotiateFSM}. Uznano, że restartowanie tego zachowania jest praktycznie równoznaczne z restartowaniem całego agenta.
+Zachowanie \texttt{WatchdogBehaviour} agenta \texttt{FactoryAgent} jest również cykliczne. Z zadaną częstotliwością sprawdza, czy przyszła wiadomość typu \texttt{WatchdogMessage} od zarządcy. Aby odpowiedzieć, sprawdza stan zachowań będącymi serwisami agenta oraz zwraca wartość \texttt{OK} jeśli wszystkie serwisy działają poprawnie lub \texttt{RESTARTING} jeśli okazało się, że któreś zachowanie został zabite. W sprawdzaniu zachowań pomięty został \texttt{NegotiateFSM}. Uznano, że restartowanie tego zachowania jest praktycznie równoznaczne z restartowaniem całego agenta. 
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\columnwidth]{figures/SAG-Kablowanie.pdf}
+	\caption{Diagram sekwencji dla mechanizmu naprawczego agentów w przypadku zgłaszania problemów z współpracownikiem}
+	\label{fig:recovery-kablowanie}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\columnwidth]{figures/SAG-Pingowanie.pdf}
+	\caption{Diagram sekwencji dla mechanizmu naprawczego agentów w przypadku nieodpowiadania na zapytania \texttt{ManagerAgent}}
+	\label{fig:recovery-pingowanie}
+\end{figure}
 
 
 

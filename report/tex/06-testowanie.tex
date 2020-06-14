@@ -52,7 +52,29 @@ W przypadku testowania systemu dla 10 agentów, wykorzystano plik konfiguracyjny
 [main: 2020-06-14 14:31:54.721081] Agents finished
 \end{lstlisting}
 \subsection{Testowanie mechanizmu naprawczego zachowanie}
-
+Testowanie mechanizmu naprawczego zachowanie zostało przeprowadzane dla systemu z trzema agentami. Po określonym czasie losowany został agent oraz jego zachowanie, które to następnie zostało zabijane. Restartowanie samego zachowania jest błyskawiczne, dlatego można zauważyć, że już w następnej iteracji zachowania \texttt{ControlSubordinatesBehaviour} zachowanie działa poprawnie. W przedstawionym poniżej teście wylosowany został AgentB oraz zachowanie \texttt{ComputeAgentsCost}. W logach można zauważyć, że o 14:49:33 zostało zabite zachowanie oraz, że wiadomości wysłane do tego zachowania nie zostały dostarczone. Ponad to, można zauważyć, że AgentB wykrył niedziałające zachowanie o 14:49:48. Od tego czasu pozostali agenci nie mieli problemu z nawiązaniem kontaktu, o czym może świadczyć fakt błyskawicznego przejścia do kolejnego stanu agentów AgentA i AgentC.
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 14:49:33.063398]  killing agent 1 behaviour 
+...
+No behaviour matched for message: <message to="agentb@localhost" from="agenta@localhost" thread="None" metadata={'conversation-id': 'cost', 'performative': 'request', 'save': 'True'}>
+[10, 10, 10, 10, 10, 14, 14, 14, 14, 14, 14, 6, 6, 6, 6, 6, 6, 2, 2, 2, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 26, 26, 26, 26, 18]
+</message>
+No behaviour matched for message: <message to="agentb@localhost" from="agentc@localhost" thread="None" metadata={'conversation-id': 'cost', 'performative': 'request', 'save': 'True'}>
+[10, 10, 10, 10, 10, 6, 6, 6, 6, 6, 6, 18, 3, 3, 3, 0, 0, 14, 14, 14, 14, 14, 14, 2, 2, 2, 26, 26, 26, 26, 5, 5, 5, 5, 5, 5, 5, 5]
+</message>
+...
+[AgentA: 2020-06-14 14:49:51.796292] Starting negotiation
+...
+[AgentC: 2020-06-14 14:49:52.773619] Starting negotiation
+...
+[manager@localhost: 2020-06-14 14:49:48.103538] Pinging agentb@localhost
+...
+[AgentB: 2020-06-14 14:49:48.104472] Got message
+[AgentB: 2020-06-14 14:49:48.104609] Restarting
+...
+[manager@localhost: 2020-06-14 14:50:08.121212] Pinging agentb@localhost
+[manager@localhost: 2020-06-14 14:50:08.122911] Ping responded!
+\end{lstlisting}
 \subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowego agenta \texttt{FactoryAgent}}
 
 \subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowej liczby losowych agentów \texttt{FactoryAgent}}
