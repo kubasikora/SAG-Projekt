@@ -1,1 +1,10 @@
-\todo{opisać podstawowe wyniki, złożoność podstawowego rozwiązania, liczbe wysyłanych komunikatów. opisać rozszerzenie dla większej ilości typów/agentów}
+Najtrudniejszym i najbardziej wymagającym obliczeniowo elementem w \texttt{NegotiateFSM} jest wyznaczanie zbioru B0. Zbiór B0' składa się z wszystkich sekwencji dla danego agenta, które pozwalają na zminimalizowanie jego kosztu. Zbiór B0 zawiera natomiast te elementy, które mają najmniejszy sumaryczny koszt dla całej fabryki spośród zbioru B0'.
+
+Aby wyznaczyć zbiór B0 należy więc dla wszystkich sekwencji z B0' wysłać wiadomości do wszystkich współpracowników. W całym systemie, na tym etapie negocjacji wysyłanych jest $(n-1)\sum_{i \in Ag}|B0'_i|$ wiadomości, gdzie $n$ to liczba agentów \texttt{FactoryAgent} w systemie. 
+
+Wbrew pozorom, podczas przeprowadzania testów, okazało się, że wielkość zbioru B0' odgrywa większą rolę na szybkość wyznaczania rozwiązania, niż liczba agentów. Wielkość zbioru B0' dla każdego agenta zależy wykładniczo od liczności nierozróżnialnych dla danego agenta produktów do wyprodukowania. Wyznaczenie B0' sprowadza się do obliczenia permutacji wewnątrz nierozróżnialnych zbiorów a następnie wyznaczenia wszystkich możliwych kombinacji połączeń tych zbiorów. 
+
+Liczba nierozróżnialnych dla danego agenta produktów zależy od liczby typów produktów zleconych do wykonania. Dla agenta, który odpowiada za cechę, która może mieć trzy wartości, w przypadku zlecenia 12 różnych produktów, w najkorzystniejszym przypadku, liczność zbioru B0' wynosi $4!\cdot 4!\cdot 4!\cdot 6$ czyli $\num{82944}$, natomiast dla 11 różnych produktów $3!\cdot 4!\cdot 4!\cdot 6$ czyli $\num{20736}$.
+
+Z tego powodu postanowiliśmy ograniczyć liczbę typów do 9. Wykorzystanie algorytmu jest nadal opłacalne, gdyż przeszukiwany zbiór rozwiązań jest mniejszy o kilka rzędów wielkości niż $9!$. Jeśli chodzi o liczbę wiadomości wysyłanych w systemie, to w ogólności zależy ona od kwadratu liczby agentów (dokładnie $n \cdot (n-1)$)
+

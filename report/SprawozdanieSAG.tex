@@ -22,7 +22,11 @@
 \usepackage{siunitx}
 \usepackage{booktabs}
 \usepackage{subfig}
-
+\usepackage{listings}
+\lstset{
+	language=bash,
+	basicstyle=\ttfamily
+}
 \urlstyle{same}
 	
 \title{Systemy agentowe\\ Planowanie pracy w fabryce}
@@ -60,10 +64,18 @@ maria.konieczka.stud@pw.edu.pl, alicja.poturala.stud@pw.edu.pl, jakub.sikora2.st
 \section{Skalowanie rozwiązania}
 \label{sec:skalowanie}
 \input{tex/05-skalowanie.tex}
+\lstset{
+	tabsize=2,
+	breaklines=true,
+	basicstyle=\tiny,
+}
+\section{Testy}
+\label{sec:testy}
+\input{tex/06-testowanie.tex}
 
 \section{Podsumowanie i wnioski}
 \label{sec:podsumowanie}
-\input{tex/06-podsumowanie.tex}
+\input{tex/07-podsumowanie.tex}
 
 \bibliographystyle{acm}
 \bibliography{bibliography}

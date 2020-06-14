@@ -59,7 +59,7 @@
 \author[Konieczka, Poturała, Sikora]{Maria Konieczka \and Alicja Poturała \and Jakub Sikora} 
 
 \date{15 czerwca 2020}
-\institute[]{Planowanie pracy w fabryce}
+\institute[]{Planowanie pracy w fabryce\\Prowadzący: dr inż. Dominik Ryżko}
 
 \AtBeginSection[]
 {
@@ -129,7 +129,7 @@
     \frametitle{Planowanie jako negocajcje w systemie agentowym}
     \begin{figure}
         \centering
-        \includegraphics[width=0.5\columnwidth]{figures/SAG-Negotiation.pdf}
+        \includegraphics[width=0.6\columnwidth]{figures/SAG-Negotiation-Prezentacja.pdf}
         \label{fig:negocjacje}
     \end{figure}
 \end{frame}
@@ -181,7 +181,42 @@
 \section{Mechanizmy zabezpieczające}
 \begin{frame}
     \frametitle{Założenia mechanizmów odpornościowych}
+    Stworzono mechanizmy naprawcze dla następujących sytuacji:
+    \begin{itemize}
+        \item wykrycie zabitego zachowania w \texttt{FactoryAgent}.
+        \item brak odpowiedzi na wiadomości od współpracowników.
+        \item brak odpowiedzi na wiadomość od \texttt{ManagerAgent}
+    \end{itemize}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Rozszerzenia agentów o~zachowania zabezpieczające}
+    \begin{figure}[!ht]
+        \subfloat{%
+            \includegraphics[width=0.54\columnwidth]{figures/SAG-Manager-Behaviours-Recovery.pdf}
+        }
+        \subfloat{%
+            \includegraphics[width=0.46\columnwidth]{figures/SAG-Factory-Behaviours-Recovery.pdf}
+        }
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Aktywne odpytywanie}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.65\columnwidth]{figures/SAG-Pingowanie.pdf}
+        \label{fig:factory-fsm}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zgłaszanie nieaktywności}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.65\columnwidth]{figures/SAG-Kablowanie.pdf}
+        \label{fig:factory-fsm}
+    \end{figure}
 \end{frame}
 
 \section{Skalowanie rozwiązania}
