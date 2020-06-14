@@ -1,4 +1,3 @@
-\todo{na jakim kompoie jakie wyniki ile czasu komentarz ze niekoniecznie optymalne}
 System został przetestowany dla siedmiu przypadków. Do testowania wykorzystano maszynę wirtualną z system Ubuntu 18.04. Dla każdego z przypadków, założono, że każdy agent odpowiada za cechę, która może mieć trzy wartości.
 \subsection{Testowanie dla 3 agentów}
 W przypadku testowania systemu dla 3 agentów, wykorzystano plik konfiguracyjny ze zleceniem wejściowym \textit{generate\_vectore\_agent3.json}. Rozmiar zbioru B0' dla poszczególnych agentów wynosił 3456, 2880 i 1728. Agentom udało się dojść do porozumienia i wyznaczyć rozwiązanie po niecałych 29. sekundach.
@@ -75,8 +74,145 @@ No behaviour matched for message: <message to="agentb@localhost" from="agentc@lo
 [manager@localhost: 2020-06-14 14:50:08.121212] Pinging agentb@localhost
 [manager@localhost: 2020-06-14 14:50:08.122911] Ping responded!
 \end{lstlisting}
-\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowego agenta \texttt{FactoryAgent}}
-
+\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowego agenta \texttt{FactoryAgent}} \label{one-kill}
+Testowanie mechanizmu naprawczego agenta zostało przeprowadzane dla systemu z trzema agentami. Po określonym czasie losowany został agent, który został zatrzymywany. Manager zanim stworzy kolejnego agenta oraz zleci mu zadanie, w celu upewnienia się, ponownie zatrzymuje poprzedniego agenta. Przedstawione poniżej logi przedstawiają przebieg mechanizmu naprawczego. Można zauważyć, że po zatrzymaniu agenta występuje problem z dostarczeniem wiadomości. Pozostali agenci oczekują na wiadomość od zatrzymanego agenta w stanie \texttt{StateWaitForProposals}.
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 15:25:30.105538]  killing agent 2
+...
+[AgentC: 2020-06-14 15:25:30.253194] Finishing at state STATE_PROPOSE
+...
+[AgentA: 2020-06-14 15:25:30.254396] Starting negotiation
+No behaviour matched for message: <message to="agentc@localhost" from="agenta@localhost" thread="None" metadata={'conversation-id': 'states', 'performative': 'propose', 'language': 'list'}>
+[14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 6, 6, 6, 6, 6, 6, 0, 0, 18, 26, 26, 26, 26]
+</message>
+[AgentB: 2020-06-14 15:25:30.255019] Starting negotiation
+No behaviour matched for message: <message to="agentc@localhost" from="agentb@localhost" thread="None" metadata={'conversation-id': 'states', 'performative': 'propose', 'language': 'list'}>
+[26, 26, 26, 26, 6, 6, 6, 6, 6, 6, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 14, 14, 14, 14, 14, 14, 2, 2, 2, 0, 0, 18, 10, 10, 10, 10, 10]
+</message>
+...
+[manager@localhost: 2020-06-14 15:25:35.210365] Pinging agentc@localhost
+No behaviour matched for message: <message to="agentc@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+...
+[manager@localhost: 2020-06-14 15:26:15.210182] Pinging agentc@localhost
+No behaviour matched for message: <message to="agentc@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+...
+[manager@localhost: 2020-06-14 15:26:17.212606] No response!
+[manager@localhost: 2020-06-14 15:26:17.212838] Adding agentc@localhost to the team
+[AgentC: 2020-06-14 15:26:17.213241] init done
+[AgentC: 2020-06-14 15:26:17.255006] Setting up agent behaviours
+[AgentC: 2020-06-14 15:26:17.255696] All behaviours set up
+...
+[AgentC: 2020-06-14 15:26:22.918378] My seq [26, 26, 26, 26, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10, 18, 0, 0, 3, 3, 3, 6, 6, 6, 6, 6, 6]
+[AgentC: 2020-06-14 15:26:22.918467] Starting negotiation
+\end{lstlisting}
 \subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowej liczby losowych agentów \texttt{FactoryAgent}}
-
+W przypadku testowania mechanizmu naprawczego, kiedy zatrzymywana jest losowa liczba agentów, sposób obsługi błędu jest analogiczny do tego opisanego w punkcie \ref{one-kill}. W przedstawionym poniżej przypadku zostały zatrzymane AgentA i AgentB
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 15:39:56.109117]  killing agent 1
+[manager@localhost: 2020-06-14 15:39:56.115072]  killing agent 0
+...
+[AgentA: 2020-06-14 15:39:56.262956] Finishing at state STATE_PROPOSE
+[AgentB: 2020-06-14 15:39:56.265086] Finishing at state STATE_PROPOSE
+...
+No behaviour matched for message: <message to="agenta@localhost" from="agentc@localhost" thread="None" metadata={'conversation-id': 'states', 'performative': 'propose', 'language': 'list'}>
+[18, 0, 0, 6, 6, 6, 6, 6, 6, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 26, 26, 26, 26, 14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10]
+</message>
+No behaviour matched for message: <message to="agentb@localhost" from="agentc@localhost" thread="None" metadata={'conversation-id': 'states', 'performative': 'propose', 'language': 'list'}>
+[18, 0, 0, 6, 6, 6, 6, 6, 6, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 26, 26, 26, 26, 14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10]
+</message>
+...
+[manager@localhost: 2020-06-14 15:40:01.166436] Pinging agenta@localhost
+No behaviour matched for message: <message to="agenta@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+[manager@localhost: 2020-06-14 15:40:01.166858] Pinging agentb@localhost
+No behaviour matched for message: <message to="agentb@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+...
+[manager@localhost: 2020-06-14 15:40:03.171134] No response!
+[manager@localhost: 2020-06-14 15:40:05.173681] No response!
+...
+[manager@localhost: 2020-06-14 15:40:41.166766] Pinging agenta@localhost
+No behaviour matched for message: <message to="agenta@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+[manager@localhost: 2020-06-14 15:40:41.167190] Pinging agentb@localhost
+No behaviour matched for message: <message to="agentb@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+[manager@localhost: 2020-06-14 15:40:41.167518] Pinging agentc@localhost
+[AgentC: 2020-06-14 15:40:41.167963] Got message
+[manager@localhost: 2020-06-14 15:40:41.168377] Ping responded!
+[manager@localhost: 2020-06-14 15:40:43.169765] No response!
+[manager@localhost: 2020-06-14 15:40:45.170964] No response!
+[manager@localhost: 2020-06-14 15:40:45.171108] Adding agenta@localhost to the team
+[AgentA: 2020-06-14 15:40:45.171974] init done
+[AgentA: 2020-06-14 15:40:45.212212] Setting up agent behaviours
+...
+[manager@localhost: 2020-06-14 15:40:45.214611] Adding agentb@localhost to the team
+[AgentB: 2020-06-14 15:40:45.214894] init done
+[AgentB: 2020-06-14 15:40:45.307737] Setting up agent behaviours
+\end{lstlisting}
 \subsection{Testowanie mechanizmu naprawczego w przypadku zabicia wszystkich agentów \texttt{FactoryAgent}}
+System jest odporny także na zatrzymanie wszystkich agentów. Manager wykryje taki błąd analogicznie jak jest to opisane w punkcie \ref{one-kill}. Logi z przypadku testowego podczas którego zatrzymywani są wszystkie agenty zostały przedstawione poniżej.
+\begin{lstlisting}
+[manager@localhost: 2020-06-14 15:47:33.816601]  killing agent 0
+[manager@localhost: 2020-06-14 15:47:33.816721]  killing agent 1
+[manager@localhost: 2020-06-14 15:47:33.816767]  killing agent 2
+...
+[AgentA: 2020-06-14 15:47:33.875307] Finishing at state STATE_PROPOSE
+[AgentB: 2020-06-14 15:47:33.876473] Finishing at state STATE_PROPOSE
+[AgentC: 2020-06-14 15:47:33.876532] Finishing at state STATE_PROPOSE
+[manager@localhost: 2020-06-14 15:47:38.877764] Pinging agenta@localhost
+No behaviour matched for message: <message to="agenta@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+[manager@localhost: 2020-06-14 15:47:38.878270] Pinging agentb@localhost
+No behaviour matched for message: <message to="agentb@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+[manager@localhost: 2020-06-14 15:47:38.878605] Pinging agentc@localhost
+No behaviour matched for message: <message to="agentc@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+0
+</message>
+[manager@localhost: 2020-06-14 15:47:40.881118] No response!
+[manager@localhost: 2020-06-14 15:47:42.883007] No response!
+[manager@localhost: 2020-06-14 15:47:44.885855] No response!
+...
+[manager@localhost: 2020-06-14 15:48:18.878783] Pinging agenta@localhost
+No behaviour matched for message: <message to="agenta@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+[manager@localhost: 2020-06-14 15:48:18.879208] Pinging agentb@localhost
+No behaviour matched for message: <message to="agentb@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+[manager@localhost: 2020-06-14 15:48:18.879481] Pinging agentc@localhost
+No behaviour matched for message: <message to="agentc@localhost" from="manager@localhost" thread="None" metadata={'conversation-id': 'watchdog', 'performative': 'inform'}>
+2
+</message>
+[manager@localhost: 2020-06-14 15:48:20.882564] No response!
+[manager@localhost: 2020-06-14 15:48:22.883622] No response!
+[manager@localhost: 2020-06-14 15:48:24.885824] No response!
+[manager@localhost: 2020-06-14 15:48:24.885949] Adding agenta@localhost to the team
+[AgentA: 2020-06-14 15:48:24.886344] init done
+[AgentA: 2020-06-14 15:48:24.967628] Setting up agent behaviours
+[AgentA: 2020-06-14 15:48:24.968506] All behaviours set up
+...
+[manager@localhost: 2020-06-14 15:48:24.969393] Task sent to agenta@localhost
+[manager@localhost: 2020-06-14 15:48:24.969466] Adding agentb@localhost to the team
+[AgentB: 2020-06-14 15:48:24.969950] init done
+[AgentB: 2020-06-14 15:48:25.038489] Setting up agent behaviours
+[AgentB: 2020-06-14 15:48:25.039391] All behaviours set up
+...
+[manager@localhost: 2020-06-14 15:48:25.040640] Adding agentc@localhost to the team
+[AgentC: 2020-06-14 15:48:25.041053] init done
+[AgentC: 2020-06-14 15:48:25.110181] Setting up agent behaviours
+[AgentC: 2020-06-14 15:48:25.111143] All behaviours set up
+
+\end{lstlisting}
