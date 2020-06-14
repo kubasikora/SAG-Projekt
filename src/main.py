@@ -101,7 +101,7 @@ if __name__ == "__main__":
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(40)
+            time.sleep(20)
             index = random.choice(range(0,agent_number))
             managerAgent.logger.log_error(f" killing agent {index}")
             managerAgent.workers[index].stop()
@@ -114,7 +114,7 @@ if __name__ == "__main__":
             managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(50)
+            time.sleep(20)
             random_number = random.choice(range(0,agent_number))
             for i in range(0, random_number):
                 index = random.choice((range(0,agent_number)))
@@ -129,7 +129,7 @@ if __name__ == "__main__":
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(40)
+            time.sleep(20)
             for index in range(0,agent_number):
                 managerAgent.logger.log_error(f" killing agent {index}")
                 managerAgent.workers[index].stop()
@@ -142,11 +142,19 @@ if __name__ == "__main__":
             managerAgent,agent_number = generate_agents_manager(data, test_case_order_dict)
             managerAgent.start()
             managerAgent.web.start(hostname="localhost", port="10001")
-            time.sleep(20)
+            time.sleep(10)
             indexB = random.choice(range(0,2))
             indexW = random.choice(range(0,agent_number))
             managerAgent.logger.log_error(f" killing agent {indexW} behaviour {indexB}")
             managerAgent.workers[indexW].killRandomBehaviour(indexB)
+
+        elif test_case == 6:
+            print("Test case: 8 agents are working")
+            
+            test_case_order_dict = "order2"
+            managerAgent, agent_number = generate_agents_manager(data, test_case_order_dict)
+            managerAgent.start()
+            managerAgent.web.start(hostname="localhost", port="10001")
 
         else:
             print("Wrong number")

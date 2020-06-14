@@ -9,7 +9,7 @@
     },
     "order3" : {
         "agent_number": 10,
-        "car_types_path" :"config/generate_vector_agent10_other.json"
+        "car_types_path" :"config/generate_vector_agent10.json"
     },
 
 

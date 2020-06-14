@@ -74,7 +74,7 @@ No behaviour matched for message: <message to="agentb@localhost" from="agentc@lo
 [manager@localhost: 2020-06-14 14:50:08.121212] Pinging agentb@localhost
 [manager@localhost: 2020-06-14 14:50:08.122911] Ping responded!
 \end{lstlisting}
-\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowego agenta \texttt{FactoryAgent}} \label{one-kill}
+\subsection{Testowanie mechanizmu naprawczego w przypadku zatrzymania losowego agenta \texttt{FactoryAgent}} \label{one-kill}
 Testowanie mechanizmu naprawczego agenta zostało przeprowadzane dla systemu z trzema agentami. Po określonym czasie losowany został agent, który został zatrzymywany. Manager zanim stworzy kolejnego agenta oraz zleci mu zadanie, w celu upewnienia się, ponownie zatrzymuje poprzedniego agenta. Przedstawione poniżej logi przedstawiają przebieg mechanizmu naprawczego. Można zauważyć, że po zatrzymaniu agenta występuje problem z dostarczeniem wiadomości. Pozostali agenci oczekują na wiadomość od zatrzymanego agenta w stanie \texttt{StateWaitForProposals}.
 \begin{lstlisting}
 [manager@localhost: 2020-06-14 15:25:30.105538]  killing agent 2
@@ -109,7 +109,7 @@ No behaviour matched for message: <message to="agentc@localhost" from="manager@l
 [AgentC: 2020-06-14 15:26:22.918378] My seq [26, 26, 26, 26, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 14, 14, 14, 14, 14, 14, 10, 10, 10, 10, 10, 18, 0, 0, 3, 3, 3, 6, 6, 6, 6, 6, 6]
 [AgentC: 2020-06-14 15:26:22.918467] Starting negotiation
 \end{lstlisting}
-\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia losowej liczby losowych agentów \texttt{FactoryAgent}}
+\subsection{Testowanie mechanizmu naprawczego w przypadku zatrzymania losowej liczby losowych agentów \texttt{FactoryAgent}}
 W przypadku testowania mechanizmu naprawczego, kiedy zatrzymywana jest losowa liczba agentów, sposób obsługi błędu jest analogiczny do tego opisanego w punkcie \ref{one-kill}. W przedstawionym poniżej przypadku zostały zatrzymane AgentA i AgentB
 \begin{lstlisting}
 [manager@localhost: 2020-06-14 15:39:56.109117]  killing agent 1
@@ -158,7 +158,7 @@ No behaviour matched for message: <message to="agentb@localhost" from="manager@l
 [AgentB: 2020-06-14 15:40:45.214894] init done
 [AgentB: 2020-06-14 15:40:45.307737] Setting up agent behaviours
 \end{lstlisting}
-\subsection{Testowanie mechanizmu naprawczego w przypadku zabicia wszystkich agentów \texttt{FactoryAgent}}
+\subsection{Testowanie mechanizmu naprawczego w przypadku zatrzymania wszystkich agentów \texttt{FactoryAgent}}
 System jest odporny także na zatrzymanie wszystkich agentów. Manager wykryje taki błąd analogicznie jak jest to opisane w punkcie \ref{one-kill}. Logi z przypadku testowego podczas którego zatrzymywani są wszystkie agenty zostały przedstawione poniżej.
 \begin{lstlisting}
 [manager@localhost: 2020-06-14 15:47:33.816601]  killing agent 0
